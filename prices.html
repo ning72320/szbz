@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>服务价格</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color-light: rgba(156, 39, 176, 0.1);
+            --primary-color: #9C27B0;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #f8f8f8;
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 932px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background-color: #f8f8f8;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 90px;
+        }
+        
+        .header {
+            position: relative;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 20px 15px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .header-title {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-subtitle {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            margin: -20px 20px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-box {
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .search-icon {
+            color: #999;
+            margin-right: 10px;
+        }
+        
+        .search-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .price-notice {
+            margin: 0 20px 20px;
+            background-color: #FFF8E1;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .notice-icon {
+            color: #FFA000;
+            font-size: 18px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .notice-text {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .category-tabs {
+            display: flex;
+            padding: 0 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-tab {
+            flex: 0 0 auto;
+            padding: 8px 18px;
+            margin: 0 5px;
+            background-color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .category-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .price-list {
+            padding: 0 20px;
+        }
+        
+        .price-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background-color: var(--primary-color-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .section-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .price-card {
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        .price-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .price-name {
+            font-weight: 500;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .price-tag {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .price-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .price-content.active {
+            max-height: 500px;
+            padding-top: 12px;
+            padding-bottom: 15px;
+        }
+        
+        .price-details {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 14px;
+        }
+        
+        .price-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-name {
+            color: #666;
+        }
+        
+        .item-price {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .toggle-icon {
+            color: #999;
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-icon.active {
+            transform: rotate(180deg);
+        }
+        
+        .package-label {
+            display: inline-block;
+            background-color: var(--primary-color-light);
+            color: var(--primary-color);
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+        
+        .empty-results {
+            padding: 40px 0;
+            text-align: center;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        
+        .dynamic-island {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 20px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 99;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon,
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <!-- Dynamic Island模拟 -->
+        <div class="dynamic-island"></div>
+        
+        <div class="content">
+            <div class="header">
+                <a href="index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-title">服务价格</div>
+                <div class="header-subtitle">殡葬服务收费标准与价格查询</div>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="搜索服务项目或价格">
+                </div>
+            </div>
+            
+            <div class="price-notice">
+                <i class="fas fa-info-circle notice-icon"></i>
+                <div class="notice-text">
+                    价格仅供参考，实际收费可能因地区、机构等因素有所不同，具体请以各服务机构公示为准。特殊需求请联系客服咨询。
+                </div>
+            </div>
+            
+            <div class="category-tabs">
+                <div class="category-tab active">全部</div>
+                <div class="category-tab">基础服务</div>
+                <div class="category-tab">殡仪服务</div>
+                <div class="category-tab">丧葬用品</div>
+                <div class="category-tab">墓地安葬</div>
+                <div class="category-tab">优惠套餐</div>
+            </div>
+            
+            <div class="price-list">
+                <!-- 基础服务 -->
+                <div class="price-section">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="section-name">基础服务</div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">遗体接运服务</div>
+                            <div class="price-tag">¥300-600</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                提供专业遗体接运车辆和人员，将逝者安全、尊严地运送至殡仪馆。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">市区内接运（10公里内）</div>
+                                <div class="item-price">¥300</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">远郊区接运（10-30公里）</div>
+                                <div class="item-price">¥450</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">跨区县接运（30公里以上）</div>
+                                <div class="item-price">¥600起</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">遗体存放服务</div>
+                            <div class="price-tag">¥100/天</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                在殡仪馆冷藏室提供专业的遗体冷藏保存服务，保持遗体完好。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">基础冷藏服务（标准间）</div>
+                                <div class="item-price">¥100/天</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">VIP单间冷藏服务</div>
+                                <div class="item-price">¥180/天</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体整容基础服务</div>
+                                <div class="item-price">¥300起</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 殡仪服务 -->
+                <div class="price-section">
+                    <div class="section-title">
+                        <div class="section-icon" style="background-color: rgba(244, 67, 54, 0.1); color: #F44336;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="section-name">殡仪服务</div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">告别厅使用<span class="package-label">热门</span></div>
+                            <div class="price-tag">¥600-3800</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                提供不同规格的告别厅场地租用服务，用于亲友悼念送别仪式。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">小型告别厅（容纳30人以内）</div>
+                                <div class="item-price">¥600/场</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">中型告别厅（容纳50-100人）</div>
+                                <div class="item-price">¥1200/场</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">大型告别厅（容纳100-200人）</div>
+                                <div class="item-price">¥2500/场</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">VIP告别厅（专属服务人员）</div>
+                                <div class="item-price">¥3800/场</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">遗体火化服务</div>
+                            <div class="price-tag">¥400-800</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                提供专业、环保的遗体火化服务，火化后骨灰装入骨灰盒。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">标准火化服务</div>
+                                <div class="item-price">¥400</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">优先火化服务</div>
+                                <div class="item-price">¥600</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">骨灰盒（普通）</div>
+                                <div class="item-price">¥150起</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">骨灰盒（精品）</div>
+                                <div class="item-price">¥300-800</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 墓地安葬 -->
+                <div class="price-section">
+                    <div class="section-title">
+                        <div class="section-icon" style="background-color: rgba(0, 150, 136, 0.1); color: #009688;">
+                            <i class="fas fa-monument"></i>
+                        </div>
+                        <div class="section-name">墓地安葬</div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">传统墓地</div>
+                            <div class="price-tag">¥8000-50000</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                提供不同位置、大小、风水的传统墓地，用于长期安葬逝者骨灰。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">普通单人墓</div>
+                                <div class="item-price">¥8000-15000</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">夫妻合葬墓</div>
+                                <div class="item-price">¥15000-25000</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">家族墓</div>
+                                <div class="item-price">¥30000-50000</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">墓碑刻字</div>
+                                <div class="item-price">¥10-20/字</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">生态安葬<span class="package-label">推荐</span></div>
+                            <div class="price-tag">¥2000-8000</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                提供环保低碳的生态安葬方式，包括树葬、花葬、草坪葬等。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">树葬</div>
+                                <div class="item-price">¥3000-5000</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">花坛葬</div>
+                                <div class="item-price">¥2000-4000</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">草坪葬</div>
+                                <div class="item-price">¥2000-3000</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">海葬</div>
+                                <div class="item-price">¥4000-8000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 优惠套餐 -->
+                <div class="price-section">
+                    <div class="section-title">
+                        <div class="section-icon" style="background-color: rgba(33, 150, 243, 0.1); color: #2196F3;">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="section-name">优惠套餐</div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">基础丧葬套餐<span class="package-label">超值</span></div>
+                            <div class="price-tag">¥2800</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                基础服务组合套餐，包含必要的丧葬服务项目，性价比高。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体接运（市区内）</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体冷藏（3天）</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体整容（基础）</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">小型告别厅使用</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体火化</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">普通骨灰盒</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-name">尊享丧葬套餐<span class="package-label">热门</span></div>
+                            <div class="price-tag">¥5800</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="price-content">
+                            <div class="price-details">
+                                中高端服务组合套餐，提供更舒适、更体面的告别仪式。
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体接运（30公里内）</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体冷藏（5天）</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">遗体整容（高级）</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">中型告别厅使用</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">优先火化</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">精品骨灰盒</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="item-name">追思纪念册</div>
+                                <div class="item-price">包含</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="tab-bar">
+            <div class="tab-item" data-page="index.html">
+                <i class="tab-icon fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-page="funeral-manager.html">
+                <i class="tab-icon fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item" data-page="profile.html">
+                <i class="tab-icon fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面链接
+            initPageLinks();
+            
+            // 初始化底部导航
+            initTabBar();
+            
+            // 搜索功能
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('focus', function() {
+                this.placeholder = '';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.placeholder = '搜索服务项目或价格';
+            });
+            
+            // 切换分类标签
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    // 为当前点击的标签添加active类
+                    this.classList.add('active');
+                    
+                    // 这里可以添加根据分类筛选价格项目的逻辑
+                });
+            });
+            
+            // 价格卡片展开/收起
+            const priceHeaders = document.querySelectorAll('.price-header');
+            priceHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('.toggle-icon');
+                    
+                    if (content.classList.contains('active')) {
+                        content.classList.remove('active');
+                        icon.classList.remove('active');
+                    } else {
+                        content.classList.add('active');
+                        icon.classList.add('active');
+                    }
+                });
+            });
+            
+            // 搜索筛选功能
+            searchInput.addEventListener('input', function() {
+                const searchText = this.value.toLowerCase();
+                const priceCards = document.querySelectorAll('.price-card');
+                
+                priceCards.forEach(card => {
+                    const cardName = card.querySelector('.price-name').textContent.toLowerCase();
+                    const cardDetails = card.querySelector('.price-details').textContent.toLowerCase();
+                    
+                    if (cardName.includes(searchText) || cardDetails.includes(searchText)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

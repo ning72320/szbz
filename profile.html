@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .profile-container {
+            padding-bottom: 80px;
+        }
+        
+        .profile-header {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color), #6ac5a9);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 20px;
+            position: relative;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .header-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-actions a {
+            color: white;
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            margin-right: 15px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar .edit-avatar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding: 3px 0;
+            font-size: 12px;
+        }
+        
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .username {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .user-badge {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+        
+        .user-id {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .menu-section {
+            background-color: white;
+            border-radius: 15px;
+            margin: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .menu-title {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-title-more {
+            font-size: 13px;
+            color: #999;
+            font-weight: normal;
+        }
+        
+        .menu-list {
+            padding: 0;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 15px;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+        
+        .menu-item:active {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .menu-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 55px;
+            right: 0;
+            bottom: 0;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+        
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        
+        .menu-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .menu-label {
+            font-size: 15px;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .menu-desc {
+            font-size: 13px;
+            color: #999;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .menu-arrow {
+            color: #c8c9cc;
+            margin-left: 5px;
+            flex-shrink: 0;
+        }
+        
+        .menu-icon i {
+            font-size: 18px;
+        }
+        
+        .menu-badge {
+            margin-right: 8px;
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 12px;
+            border-radius: 10px;
+            padding: 2px 6px;
+            min-width: 16px;
+            text-align: center;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+        .logout-btn {
+            margin: 20px 15px 30px;
+            border-radius: 10px;
+            font-weight: 500;
+            width: calc(100% - 30px);
+        }
+        
+        /* 图标背景颜色 */
+        .icon-bg-orange { background: rgba(255, 152, 0, 0.1); color: #FF9800; }
+        .icon-bg-red { background: rgba(244, 67, 54, 0.1); color: #F44336; }
+        .icon-bg-green { background: rgba(76, 175, 80, 0.1); color: #4CAF50; }
+        .icon-bg-blue { background: rgba(33, 150, 243, 0.1); color: #2196F3; }
+        .icon-bg-purple { background: rgba(156, 39, 176, 0.1); color: #9C27B0; }
+        .icon-bg-cyan { background: rgba(0, 188, 212, 0.1); color: #00BCD4; }
+        .icon-bg-teal { background: rgba(0, 150, 136, 0.1); color: #009688; }
+        .icon-bg-gray { background: rgba(96, 125, 139, 0.1); color: #607D8B; }
+        .icon-bg-brown { background: rgba(121, 85, 72, 0.1); color: #795548; }
+        
+        /* Tab bar adjustment */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 99;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="content profile-container">
+            <div class="profile-header">
+                <div class="header-actions">
+                    <a href="notification.html"><i class="fas fa-bell"></i></a>
+                    <a href="settings.html"><i class="fas fa-cog"></i></a>
+                </div>
+                
+                <div class="profile-info">
+                    <div class="avatar">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="头像">
+                        <div class="edit-avatar">编辑</div>
+                    </div>
+                    <div class="user-info">
+                        <div class="username">
+                            张小红
+                            <span class="user-badge"><i class="fas fa-star" style="font-size: 10px;"></i> 会员</span>
+                        </div>
+                        <div class="user-id">用户ID: 58473920</div>
+                        
+                        <div class="user-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">纪念馆</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">5</div>
+                                <div class="stat-label">订单</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">祭拜</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">
+                    我的服务
+                    <span class="menu-title-more">全部 <i class="fas fa-chevron-right" style="font-size: 12px"></i></span>
+                </div>
+                <div class="menu-list">
+                    <div class="menu-item" data-link="order-track.html">
+                        <div class="menu-icon icon-bg-orange">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">服务订单</div>
+                            <div class="menu-desc">查看订单进度和详情</div>
+                        </div>
+                        <div class="menu-badge">2</div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="menu-item" data-link="memorial-list.html">
+                        <div class="menu-icon icon-bg-red">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">我的纪念馆</div>
+                            <div class="menu-desc">管理您创建的纪念馆</div>
+                        </div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="menu-item" data-link="appointment.html">
+                        <div class="menu-icon icon-bg-green">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">预约记录</div>
+                            <div class="menu-desc">查看和管理预约服务</div>
+                        </div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">便捷工具</div>
+                <div class="menu-list">
+                    <div class="menu-item" onclick="window.location.href='tel:96444'">
+                        <div class="menu-icon icon-bg-blue">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">一键拨号 96444</div>
+                            <div class="menu-desc">24小时服务热线</div>
+                        </div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="menu-item" data-link="feedback.html">
+                        <div class="menu-icon icon-bg-purple">
+                            <i class="fas fa-comment-alt"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">反馈与建议</div>
+                            <div class="menu-desc">帮助我们改进服务</div>
+                        </div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="menu-item" data-link="digital-assistant.html">
+                        <div class="menu-icon icon-bg-cyan">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">智能客服</div>
+                            <div class="menu-desc">AI助手为您解答问题</div>
+                        </div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">关于我们</div>
+                <div class="menu-list">
+                    <div class="menu-item" data-link="about.html">
+                        <div class="menu-icon icon-bg-gray">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">关于平台</div>
+                            <div class="menu-desc">了解我们的服务与使命</div>
+                        </div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="menu-item" data-link="privacy.html">
+                        <div class="menu-icon icon-bg-brown">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-label">隐私政策</div>
+                            <div class="menu-desc">我们如何保护您的信息</div>
+                        </div>
+                        <i class="menu-arrow fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-default logout-btn" id="logoutBtn">退出登录</button>
+            
+            <!-- 底部导航 -->
+            <div class="tab-bar">
+                <div class="tab-item" data-page="home.html">
+                    <i class="tab-icon fas fa-home"></i>
+                    <span>首页</span>
+                </div>
+                <div class="tab-item" data-page="funeral-manager.html">
+                    <i class="tab-icon fas fa-clipboard-list"></i>
+                    <span>白事管家</span>
+                </div>
+                <div class="tab-item active" data-page="profile.html">
+                    <i class="tab-icon fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面链接
+            initPageLinks();
+            
+            // 初始化底部导航
+            initTabBar();
+            
+            // 退出登录
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    showConfirm('退出登录', '确定要退出登录吗？', function() {
+                        // 退出登录成功
+                        window.location.href = 'login.html';
+                    });
+                });
+            }
+            
+            // 菜单项点击
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const link = this.getAttribute('data-link');
+                    if (link) {
+                        window.location.href = link;
+                    }
+                });
+            });
+            
+            // 头像编辑点击
+            const avatarEdit = document.querySelector('.edit-avatar');
+            if (avatarEdit) {
+                avatarEdit.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    window.location.href = 'profile-edit.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

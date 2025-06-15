@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单查询 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <style>
+        .container {
+            padding: 20px 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, #3a6186, #89253e);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-text {
+            color: white;
+            z-index: 2;
+        }
+        
+        .header-text h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header-text p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .header-image {
+            height: 120px;
+            z-index: 2;
+        }
+        
+        .search-area {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .search-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .search-title img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .search-title h2 {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+        }
+        
+        .search-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .search-button {
+            background: #89253e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .result-area {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-info {
+            margin-bottom: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            width: 100px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .info-value {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .status-timeline {
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .timeline-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 16px;
+            top: 45px;
+            bottom: 0;
+            width: 2px;
+            background: #eee;
+            z-index: 1;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .status-point {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-top: 6px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            border: 5px solid white;
+            box-sizing: content-box;
+        }
+        
+        .active .status-point {
+            background: #89253e;
+        }
+        
+        .status-content {
+            flex: 1;
+        }
+        
+        .status-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .active .status-desc {
+            color: #89253e;
+        }
+        
+        .tips {
+            background: #f8f8f8;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .tips strong {
+            color: #89253e;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-left">
+            <img src="../images/back-icon.png" class="back-icon" onclick="history.back()">
+            <span>订单查询</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <div class="header-text">
+                <h1>订单查询服务</h1>
+                <p>快速查询您的殡葬服务订单状态</p>
+            </div>
+            <img src="../images/order-track-banner.jpg" class="header-image">
+        </div>
+        
+        <div class="search-area">
+            <div class="search-title">
+                <img src="../images/order-status-icon.png" alt="查询">
+                <h2>输入订单信息</h2>
+            </div>
+            
+            <div class="search-form">
+                <div class="form-group">
+                    <label for="order-number">订单编号</label>
+                    <input type="text" id="order-number" placeholder="请输入订单编号">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone-number">手机号码</label>
+                    <input type="text" id="phone-number" placeholder="请输入预留手机号">
+                </div>
+                
+                <button class="search-button" onclick="searchOrder()">查询订单</button>
+            </div>
+        </div>
+        
+        <div class="result-area" id="result-area">
+            <div class="result-title">订单查询结果</div>
+            
+            <div class="order-info">
+                <div class="info-row">
+                    <div class="info-label">订单编号：</div>
+                    <div class="info-value" id="result-order-number">SZF2023082500001</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">服务类型：</div>
+                    <div class="info-value" id="result-service-type">追思纪念馆创建服务</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">服务状态：</div>
+                    <div class="info-value" id="result-status">正在处理中</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">创建时间：</div>
+                    <div class="info-value" id="result-create-time">2023-08-25 14:30:22</div>
+                </div>
+            </div>
+            
+            <div class="status-timeline">
+                <div class="timeline-title">处理进度</div>
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-item active">
+                    <div class="status-point"></div>
+                    <div class="status-content">
+                        <div class="status-time">2023-08-25 14:30:22</div>
+                        <div class="status-desc">订单已提交</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item active">
+                    <div class="status-point"></div>
+                    <div class="status-content">
+                        <div class="status-time">2023-08-25 15:10:45</div>
+                        <div class="status-desc">订单已确认，正在处理中</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="status-point"></div>
+                    <div class="status-content">
+                        <div class="status-time">预计完成时间</div>
+                        <div class="status-desc">服务内容制作中</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="status-point"></div>
+                    <div class="status-content">
+                        <div class="status-time">预计完成时间</div>
+                        <div class="status-desc">服务已完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tips">
+            <strong>温馨提示：</strong>
+            <p>1. 请输入正确的订单编号和预留手机号码进行查询</p>
+            <p>2. 如忘记订单编号，请联系客服 400-888-8888 查询</p>
+            <p>3. 订单状态实时更新，请以最新查询结果为准</p>
+        </div>
+    </div>
+    
+    <div class="tab-bar">
+        <div class="tab-item" onclick="location.href='home.html'">
+            <img src="../images/home-icon.png">
+            <span>首页</span>
+        </div>
+        <div class="tab-item" onclick="location.href='memorial-hall.html'">
+            <img src="../images/memorial-icon.png">
+            <span>纪念馆</span>
+        </div>
+        <div class="tab-item active" onclick="location.href='order-tracking.html'">
+            <img src="../images/order-icon.png">
+            <span>订单</span>
+        </div>
+        <div class="tab-item" onclick="location.href='user-center.html'">
+            <img src="../images/user-icon.png">
+            <span>我的</span>
+        </div>
+    </div>
+    
+    <script>
+        function searchOrder() {
+            const orderNumber = document.getElementById('order-number').value;
+            const phoneNumber = document.getElementById('phone-number').value;
+            
+            // 简单验证
+            if (!orderNumber || !phoneNumber) {
+                alert('请输入订单编号和手机号码');
+                return;
+            }
+            
+            // 模拟查询，这里应该替换为实际的API调用
+            document.getElementById('result-area').style.display = 'block';
+            document.getElementById('result-order-number').textContent = orderNumber;
+            
+            // 滚动到结果区域
+            document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html> 

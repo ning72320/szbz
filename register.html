@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .register-header {
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        .register-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .register-form {
+            padding: 0 20px;
+        }
+        
+        .input-container {
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .verify-code-btn {
+            color: var(--primary-color);
+            font-size: 14px;
+            padding: 0 8px;
+            border-left: 1px solid var(--border-color);
+        }
+        
+        .register-tips {
+            padding: 15px 5px;
+            font-size: 14px;
+            color: var(--text-color-light);
+            line-height: 1.5;
+        }
+        
+        .agreement {
+            display: flex;
+            align-items: flex-start;
+            margin: 20px 0;
+            font-size: 14px;
+            color: var(--text-color-light);
+        }
+        
+        .agreement input {
+            margin-right: 8px;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">注册账号</div>
+        </div>
+        
+        <div class="content">
+            <div class="register-header">
+                <div class="register-title">欢迎注册数字殡葬平台</div>
+            </div>
+            
+            <form id="registerForm" class="register-form">
+                <div class="input-container">
+                    <div class="input-group input-group-line">
+                        <div class="input-label"><i class="fas fa-mobile-alt" style="width: 20px;"></i></div>
+                        <input type="tel" name="phone" class="input" placeholder="请输入手机号" maxlength="11">
+                    </div>
+                    
+                    <div class="input-group input-group-line">
+                        <div class="input-label"><i class="fas fa-id-card" style="width: 20px;"></i></div>
+                        <input type="text" name="idcard" class="input" placeholder="请输入身份证号">
+                    </div>
+                    
+                    <div class="input-group input-group-line">
+                        <div class="input-label"><i class="fas fa-sms" style="width: 20px;"></i></div>
+                        <input type="text" name="verifycode" class="input" placeholder="请输入验证码">
+                        <div class="verify-code-btn" id="getCodeBtn">获取验证码</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label"><i class="fas fa-lock" style="width: 20px;"></i></div>
+                        <input type="password" name="password" class="input" placeholder="请设置登录密码">
+                    </div>
+                </div>
+                
+                <div class="register-tips">
+                    根据相关法律法规，需要您使用真实身份信息注册，平台会对您的个人信息严格保密。
+                </div>
+                
+                <div class="agreement">
+                    <input type="checkbox" id="agree" checked>
+                    <label for="agree">我已阅读并同意<a href="#" style="color: var(--primary-color);">《用户协议》</a>和<a href="#" style="color: var(--primary-color);">《隐私政策》</a></label>
+                </div>
+                
+                <button type="button" class="btn btn-primary" id="registerBtn">注册并前往实名认证</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const getCodeBtn = document.getElementById('getCodeBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            
+            // 获取验证码
+            getCodeBtn.addEventListener('click', function() {
+                const phoneInput = document.querySelector('input[name="phone"]');
+                const phone = phoneInput.value.trim();
+                
+                const phoneReg = /^1[3-9]\d{9}$/;
+                if (!phoneReg.test(phone)) {
+                    showToast('请输入有效的手机号码');
+                    return;
+                }
+                
+                // 倒计时效果
+                let countdown = 60;
+                getCodeBtn.textContent = `${countdown}秒后重试`;
+                getCodeBtn.style.color = '#999';
+                getCodeBtn.disabled = true;
+                
+                const timer = setInterval(() => {
+                    countdown--;
+                    getCodeBtn.textContent = `${countdown}秒后重试`;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        getCodeBtn.textContent = '获取验证码';
+                        getCodeBtn.style.color = 'var(--primary-color)';
+                        getCodeBtn.disabled = false;
+                    }
+                }, 1000);
+                
+                // 模拟发送验证码请求
+                showToast('验证码已发送');
+            });
+            
+            // 注册按钮
+            registerBtn.addEventListener('click', function() {
+                const isValid = validateForm('registerForm', {
+                    phone: {
+                        required: true,
+                        phone: true,
+                        message: '请输入有效的手机号码'
+                    },
+                    idcard: {
+                        required: true,
+                        idCard: true,
+                        message: '请输入有效的身份证号'
+                    },
+                    verifycode: {
+                        required: true,
+                        message: '请输入验证码'
+                    },
+                    password: {
+                        required: true,
+                        message: '请设置登录密码'
+                    }
+                });
+                
+                const agree = document.getElementById('agree');
+                if (!agree.checked) {
+                    showToast('请阅读并同意用户协议和隐私政策');
+                    return;
+                }
+                
+                if (isValid) {
+                    // 模拟注册请求
+                    showLoading();
+                    
+                    setTimeout(() => {
+                        hideLoading();
+                        // 注册成功，跳转到实名认证页面
+                        window.location.href = 'verify.html';
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

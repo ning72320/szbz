@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>殡葬政策</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color-light: rgba(33, 150, 243, 0.1);
+            --primary-color: #2196F3;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #f8f8f8;
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 932px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background-color: #f8f8f8;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 90px;
+        }
+        
+        .header {
+            position: relative;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 20px 15px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .header-title {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-subtitle {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            margin: -20px 20px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-box {
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .search-icon {
+            color: #999;
+            margin-right: 10px;
+        }
+        
+        .search-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .category-tabs {
+            display: flex;
+            padding: 0 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-tab {
+            flex: 0 0 auto;
+            padding: 8px 18px;
+            margin: 0 5px;
+            background-color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .category-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .policy-list {
+            padding: 0 20px;
+        }
+        
+        .policy-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .policy-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .policy-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background-color: var(--primary-color-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .policy-title {
+            flex: 1;
+        }
+        
+        .policy-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .policy-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .policy-tag {
+            background-color: var(--primary-color-light);
+            color: var(--primary-color);
+            border-radius: 4px;
+            padding: 3px 8px;
+            margin-right: 10px;
+            font-size: 12px;
+        }
+        
+        .policy-date {
+            display: flex;
+            align-items: center;
+        }
+        
+        .date-icon {
+            font-size: 12px;
+            margin-right: 4px;
+        }
+        
+        .policy-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .policy-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .policy-source {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .policy-view {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+        
+        .view-icon {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        
+        .empty-results {
+            padding: 40px 0;
+            text-align: center;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        
+        .dynamic-island {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 20px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 99;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon,
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <!-- Dynamic Island模拟 -->
+        <div class="dynamic-island"></div>
+        
+        <div class="content">
+            <div class="header">
+                <a href="index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-title">殡葬政策</div>
+                <div class="header-subtitle">了解最新殡葬政策法规和通知</div>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="搜索政策、法规或通知公告">
+                </div>
+            </div>
+            
+            <div class="category-tabs">
+                <div class="category-tab active">全部</div>
+                <div class="category-tab">最新政策</div>
+                <div class="category-tab">法律法规</div>
+                <div class="category-tab">通知公告</div>
+                <div class="category-tab">操作指南</div>
+                <div class="category-tab">补贴政策</div>
+            </div>
+            
+            <div class="policy-list">
+                <div class="policy-card">
+                    <div class="policy-header">
+                        <div class="policy-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="policy-title">
+                            <div class="policy-name">关于推行绿色殡葬的指导意见</div>
+                            <div class="policy-meta">
+                                <span class="policy-tag">最新政策</span>
+                                <div class="policy-date">
+                                    <i class="far fa-calendar date-icon"></i>
+                                    <span>2023-10-15</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="policy-desc">
+                        明确殡葬事业的绿色发展方向，倡导厚养薄葬、绿色节俭的丧葬礼俗，推动形成绿色低碳环保的殡葬新风尚，为建设生态文明、美丽中国贡献力量。
+                    </div>
+                    <div class="policy-footer">
+                        <div class="policy-source">来源：民政部</div>
+                        <div class="policy-view">
+                            查看详情
+                            <i class="fas fa-chevron-right view-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="policy-card">
+                    <div class="policy-header">
+                        <div class="policy-icon" style="background-color: rgba(244, 67, 54, 0.1); color: #F44336;">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="policy-title">
+                            <div class="policy-name">关于开展清明节祭扫服务工作的通知</div>
+                            <div class="policy-meta">
+                                <span class="policy-tag" style="background-color: rgba(244, 67, 54, 0.1); color: #F44336;">通知公告</span>
+                                <div class="policy-date">
+                                    <i class="far fa-calendar date-icon"></i>
+                                    <span>2023-03-10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="policy-desc">
+                        加强清明节期间祭扫服务和安全管理，积极倡导文明低碳祭扫，提供便捷多样的祭扫服务，确保祭扫活动安全有序进行。
+                    </div>
+                    <div class="policy-footer">
+                        <div class="policy-source">来源：市民政局</div>
+                        <div class="policy-view">
+                            查看详情
+                            <i class="fas fa-chevron-right view-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="policy-card">
+                    <div class="policy-header">
+                        <div class="policy-icon" style="background-color: rgba(156, 39, 176, 0.1); color: #9C27B0;">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="policy-title">
+                            <div class="policy-name">殡葬管理条例</div>
+                            <div class="policy-meta">
+                                <span class="policy-tag" style="background-color: rgba(156, 39, 176, 0.1); color: #9C27B0;">法律法规</span>
+                                <div class="policy-date">
+                                    <i class="far fa-calendar date-icon"></i>
+                                    <span>2012-12-01</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="policy-desc">
+                        为了加强殡葬管理，推进殡葬改革，实行科学殡葬，节约土地资源，保护生态环境，促进社会主义精神文明建设，制定本条例。
+                    </div>
+                    <div class="policy-footer">
+                        <div class="policy-source">来源：国务院</div>
+                        <div class="policy-view">
+                            查看详情
+                            <i class="fas fa-chevron-right view-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="policy-card">
+                    <div class="policy-header">
+                        <div class="policy-icon" style="background-color: rgba(0, 150, 136, 0.1); color: #009688;">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="policy-title">
+                            <div class="policy-name">关于进一步推行节地生态安葬的实施办法</div>
+                            <div class="policy-meta">
+                                <span class="policy-tag" style="background-color: rgba(0, 150, 136, 0.1); color: #009688;">政策解读</span>
+                                <div class="policy-date">
+                                    <i class="far fa-calendar date-icon"></i>
+                                    <span>2022-05-20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="policy-desc">
+                        积极推广树葬、花葬、草坪葬等节地生态安葬方式，对选择节地生态安葬的群众给予一定补贴，引导形成厚养薄葬的殡葬新风尚。
+                    </div>
+                    <div class="policy-footer">
+                        <div class="policy-source">来源：省民政厅</div>
+                        <div class="policy-view">
+                            查看详情
+                            <i class="fas fa-chevron-right view-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="policy-card">
+                    <div class="policy-header">
+                        <div class="policy-icon" style="background-color: rgba(255, 152, 0, 0.1); color: #FF9800;">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="policy-title">
+                            <div class="policy-name">困难群众基本殡葬服务费用补贴实施办法</div>
+                            <div class="policy-meta">
+                                <span class="policy-tag" style="background-color: rgba(255, 152, 0, 0.1); color: #FF9800;">补贴政策</span>
+                                <div class="policy-date">
+                                    <i class="far fa-calendar date-icon"></i>
+                                    <span>2022-01-10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="policy-desc">
+                        对城乡低保对象、特困人员等困难群众，提供基本殡葬服务费用补贴，保障困难群众基本殡葬需求，减轻其经济负担。
+                    </div>
+                    <div class="policy-footer">
+                        <div class="policy-source">来源：市民政局</div>
+                        <div class="policy-view">
+                            查看详情
+                            <i class="fas fa-chevron-right view-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="tab-bar">
+            <div class="tab-item" data-page="index.html">
+                <i class="tab-icon fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-page="funeral-manager.html">
+                <i class="tab-icon fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item" data-page="profile.html">
+                <i class="tab-icon fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面链接
+            initPageLinks();
+            
+            // 初始化底部导航
+            initTabBar();
+            
+            // 搜索功能
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('focus', function() {
+                this.placeholder = '';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.placeholder = '搜索政策、法规或通知公告';
+            });
+            
+            // 切换分类标签
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    // 为当前点击的标签添加active类
+                    this.classList.add('active');
+                    
+                    // 这里可以添加根据分类加载不同政策的逻辑
+                });
+            });
+            
+            // 政策卡片点击事件
+            const policyCards = document.querySelectorAll('.policy-card');
+            policyCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 跳转到政策详情页面
+                    // window.location.href = 'policy-detail.html?id=' + someId;
+                    
+                    // 当前只是简单提示
+                    alert('正在加载政策详情...');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

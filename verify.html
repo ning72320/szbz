@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实名认证 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .verify-header {
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .verify-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .verify-desc {
+            font-size: 14px;
+            color: var(--text-color-light);
+            margin-top: 10px;
+        }
+        
+        .verify-content {
+            padding: 0 20px;
+        }
+        
+        .verify-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .verify-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .verify-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -40%;
+            width: 80%;
+            height: 1px;
+            background-color: #dcdee0;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        
+        .face-box {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            border: 4px dashed #e8e8e8;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .face-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color-light);
+        }
+        
+        .face-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #d0d0d0;
+        }
+        
+        .face-text {
+            font-size: 16px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .face-tips {
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .face-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .actions {
+            margin-top: 30px;
+        }
+        
+        #startBtn, #verifyBtn {
+            margin-bottom: 15px;
+        }
+        
+        #verifyBtn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">实名认证</div>
+        </div>
+        
+        <div class="content">
+            <div class="verify-header">
+                <div class="verify-title">人脸识别认证</div>
+                <div class="verify-desc">请按照提示完成人脸识别，确保本人操作</div>
+            </div>
+            
+            <div class="verify-content">
+                <div class="verify-steps">
+                    <div class="verify-step">
+                        <div class="step-number">1</div>
+                        <div class="step-label">注册账号</div>
+                    </div>
+                    <div class="verify-step">
+                        <div class="step-number" style="background-color: var(--secondary-color);">2</div>
+                        <div class="step-label">实名认证</div>
+                    </div>
+                    <div class="verify-step">
+                        <div class="step-number" style="background-color: #dcdee0; color: #999;">3</div>
+                        <div class="step-label">完成</div>
+                    </div>
+                </div>
+                
+                <div class="face-box">
+                    <img src="" alt="人脸预览" id="facePreview" class="face-preview">
+                    <div class="face-overlay" id="faceOverlay">
+                        <i class="face-icon fas fa-user-circle"></i>
+                        <div class="face-text">请点击下方按钮<br>开始人脸识别</div>
+                    </div>
+                </div>
+                
+                <div class="face-tips">
+                    <div style="margin-bottom: 5px; font-weight: 500;">认证提示：</div>
+                    <div>1. 请确保光线充足，面部清晰</div>
+                    <div>2. 请摘下墨镜、口罩等面部遮挡物</div>
+                    <div>3. 请正对手机，保持自然表情</div>
+                </div>
+                
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" id="startBtn">开始人脸识别</button>
+                    <button type="button" class="btn btn-primary" id="verifyBtn">确认提交</button>
+                    <button type="button" class="btn btn-default" id="retakeBtn" style="display: none;">重新拍摄</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startBtn = document.getElementById('startBtn');
+            const verifyBtn = document.getElementById('verifyBtn');
+            const retakeBtn = document.getElementById('retakeBtn');
+            const facePreview = document.getElementById('facePreview');
+            const faceOverlay = document.getElementById('faceOverlay');
+            
+            // 模拟人脸识别
+            startBtn.addEventListener('click', function() {
+                showLoading();
+                
+                // 模拟相机调用和识别过程
+                setTimeout(() => {
+                    hideLoading();
+                    
+                    // 显示模拟的人脸图像
+                    facePreview.src = 'https://images.unsplash.com/photo-1491349174775-aaafddd81942?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';
+                    facePreview.style.display = 'block';
+                    faceOverlay.style.display = 'none';
+                    
+                    // 切换按钮状态
+                    startBtn.style.display = 'none';
+                    verifyBtn.style.display = 'block';
+                    retakeBtn.style.display = 'block';
+                }, 2000);
+            });
+            
+            // 重新拍摄
+            retakeBtn.addEventListener('click', function() {
+                facePreview.style.display = 'none';
+                faceOverlay.style.display = 'flex';
+                
+                startBtn.style.display = 'block';
+                verifyBtn.style.display = 'none';
+                retakeBtn.style.display = 'none';
+            });
+            
+            // 确认提交
+            verifyBtn.addEventListener('click', function() {
+                showLoading();
+                
+                // 模拟验证过程
+                setTimeout(() => {
+                    hideLoading();
+                    
+                    // 显示成功对话框
+                    showConfirm('认证成功', '您的实名认证已通过，现在可以使用完整功能了！', function() {
+                        // 跳转到首页
+                        window.location.href = 'home.html';
+                    });
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html> 

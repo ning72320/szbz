@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>纪念馆详情 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color: #5d78a8;
+            --primary-light: rgba(93, 120, 168, 0.1);
+            --primary-dark: #4a5f8a;
+            --accent-color: #4a7a9b;
+            --red-color: #e74c3c;
+            --blue-color: #3498db;
+            --green-color: #2ecc71;
+            --yellow-color: #f39c12;
+            --text-color: #333;
+            --text-color-light: #777;
+            --border-color: #e0e0e0;
+            --bg-color: #f8f8f8;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #5d78a8, #4a7a9b);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            background-color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        /* 透明状态栏 */
+        .status-bar {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+        
+        .back {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .right-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        /* 封面区域 */
+        .cover-area {
+            position: relative;
+            height: 280px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .cover-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            color: white;
+        }
+        
+        .cover-name {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .cover-date {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .creator-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .creator-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #eee;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        
+        .creator-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .creator-name {
+            font-size: 14px;
+        }
+        
+        .cover-stats {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .cover-stat {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .cover-stat i {
+            margin-right: 5px;
+        }
+        
+        /* 功能按钮 */
+        .action-buttons {
+            display: flex;
+            background-color: white;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .action-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .action-btn i {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .action-btn span {
+            font-size: 12px;
+        }
+        
+        /* 纪念馆内容区域 */
+        .memorial-content {
+            padding: 0 15px;
+        }
+        
+        .content-section {
+            margin: 25px 0;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .section-title:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .section-more {
+            margin-left: auto;
+            font-size: 13px;
+            color: var(--text-color-light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-more i {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        
+        /* 生平介绍 */
+        .bio-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .bio-collapse {
+            text-align: center;
+            font-size: 13px;
+            color: var(--primary-color);
+        }
+        
+        .bio-collapse i {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        
+        /* 祭品区 */
+        .offerings-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .offering-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .offering-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+        
+        .offering-name {
+            font-size: 12px;
+            color: var(--text-color);
+        }
+        
+        .offering-count {
+            font-size: 11px;
+            color: var(--text-color-light);
+        }
+        
+        /* 照片区 */
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+        
+        .photo-item {
+            aspect-ratio: 1/1;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-more {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* 祭扫区 */
+        .worship-area {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .worship-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .worship-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .worship-subtitle {
+            font-size: 13px;
+            color: var(--text-color-light);
+        }
+        
+        .worship-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .worship-item {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .worship-item i {
+            margin-right: 5px;
+        }
+        
+        .worship-record {
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .record-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .record-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .record-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .record-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .record-content {
+            flex: 1;
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+        
+        .record-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .record-time {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        
+        .record-text {
+            font-size: 13px;
+            color: var(--text-color);
+        }
+        
+        .worship-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .worship-input {
+            flex: 1;
+            background-color: #f8f8f8;
+            border-radius: 20px;
+            border: none;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .worship-send-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .worship-send-btn i {
+            margin-right: 5px;
+        }
+        
+        /* 音乐播放器 */
+        .music-player {
+            position: fixed;
+            bottom: 80px;
+            left: 15px;
+            right: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .music-info {
+            flex: 1;
+        }
+        
+        .music-name {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 3px;
+        }
+        
+        .music-artist {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        
+        .music-controls {
+            display: flex;
+            align-items: center;
+        }
+        
+        .music-control {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+        
+        /* 底部加载 */
+        .load-more {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-color-light);
+            font-size: 14px;
+        }
+        
+        /* 媒体查询 */
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <!-- 透明状态栏 -->
+        <div class="status-bar">
+            <div class="back">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div style="flex: 1;"></div>
+            <div class="right-action">
+                <i class="fas fa-share-alt"></i>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 封面区域 -->
+            <div class="cover-area" style="background-image: url('../images/memorial-1.jpg');">
+                <div class="cover-overlay">
+                    <div class="cover-name">陈忠华先生纪念馆</div>
+                    <div class="cover-date">1950.3.15 - 2022.8.22</div>
+                    
+                    <div class="creator-info">
+                        <div class="creator-avatar">
+                            <img src="../images/avatar-1.jpg" alt="创建者头像">
+                        </div>
+                        <div class="creator-name">创建者: 陈小明</div>
+                    </div>
+                    
+                    <div class="cover-stats">
+                        <div class="cover-stat">
+                            <i class="fas fa-eye"></i>
+                            <span>2,458 次浏览</span>
+                        </div>
+                        <div class="cover-stat">
+                            <i class="fas fa-heart"></i>
+                            <span>235 次祭扫</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 功能按钮 -->
+            <div class="action-buttons">
+                <a href="#" class="action-btn" id="worshipBtn">
+                    <i class="fas fa-pray"></i>
+                    <span>祭拜</span>
+                </a>
+                <a href="#" class="action-btn" id="memoryBtn">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>留言寄语</span>
+                </a>
+                <a href="#" class="action-btn" id="photoBtn">
+                    <i class="fas fa-images"></i>
+                    <span>纪念相册</span>
+                </a>
+                <a href="#" class="action-btn" id="musicBtn">
+                    <i class="fas fa-music"></i>
+                    <span>纪念音乐</span>
+                </a>
+            </div>
+            
+            <!-- 纪念馆内容区域 -->
+            <div class="memorial-content">
+                <!-- 生平介绍 -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">生平介绍</div>
+                        <div class="section-more">
+                            全部 <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bio-text">
+                        陈忠华先生，1950年3月15日出生于四川省泸州市，2022年8月22日因病离世，享年72岁。
+                        <br><br>
+                        陈先生一生勤勉，曾担任泸州市第一中学数学教师30余年，桃李满天下。退休后热心社区服务，关心青少年教育，多次获得"优秀教师"和"模范志愿者"等称号。
+                        <br><br>
+                        他为人正直，处事公道，待人真诚，是学生眼中的良师，同事眼中的益友，家人眼中的顶梁柱。他的精神与品德将永远激励我们前行。
+                    </div>
+                    
+                    <div class="bio-collapse">
+                        收起 <i class="fas fa-chevron-up"></i>
+                    </div>
+                </div>
+                
+                <!-- 祭品区 -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">祭品统计</div>
+                        <div class="section-more">
+                            全部 <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="offerings-grid">
+                        <div class="offering-item">
+                            <img src="../images/offering-flower.png" class="offering-icon" alt="鲜花">
+                            <div class="offering-name">鲜花</div>
+                            <div class="offering-count">86朵</div>
+                        </div>
+                        <div class="offering-item">
+                            <img src="../images/offering-candle.png" class="offering-icon" alt="蜡烛">
+                            <div class="offering-name">蜡烛</div>
+                            <div class="offering-count">64根</div>
+                        </div>
+                        <div class="offering-item">
+                            <img src="../images/offering-incense.png" class="offering-icon" alt="香">
+                            <div class="offering-name">香</div>
+                            <div class="offering-count">42支</div>
+                        </div>
+                        <div class="offering-item">
+                            <img src="../images/offering-fruit.png" class="offering-icon" alt="水果">
+                            <div class="offering-name">水果</div>
+                            <div class="offering-count">38份</div>
+                        </div>
+                        <div class="offering-item">
+                            <img src="../images/offering-wine.png" class="offering-icon" alt="酒">
+                            <div class="offering-name">酒</div>
+                            <div class="offering-count">23杯</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 照片区 -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">生前照片</div>
+                        <div class="section-more">
+                            全部 <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="photos-grid">
+                        <div class="photo-item">
+                            <img src="../images/memorial-photo-1.jpg" alt="生前照片">
+                        </div>
+                        <div class="photo-item">
+                            <img src="../images/memorial-photo-2.jpg" alt="生前照片">
+                        </div>
+                        <div class="photo-item">
+                            <img src="../images/memorial-photo-3.jpg" alt="生前照片">
+                        </div>
+                        <div class="photo-item">
+                            <img src="../images/memorial-photo-4.jpg" alt="生前照片">
+                        </div>
+                        <div class="photo-item">
+                            <img src="../images/memorial-photo-5.jpg" alt="生前照片">
+                        </div>
+                        <div class="photo-item">
+                            <div class="photo-more">+24</div>
+                            <img src="../images/memorial-photo-6.jpg" alt="生前照片">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 祭扫区 -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">祭扫留言</div>
+                    </div>
+                    
+                    <div class="worship-area">
+                        <div class="worship-header">
+                            <div class="worship-title">寄托哀思，表达思念</div>
+                            <div class="worship-subtitle">已有128位亲友在此留言祭奠</div>
+                        </div>
+                        
+                        <div class="worship-list">
+                            <div class="worship-item">
+                                <i class="fas fa-pray"></i>
+                                <span>一路走好</span>
+                            </div>
+                            <div class="worship-item">
+                                <i class="fas fa-heart"></i>
+                                <span>永远怀念</span>
+                            </div>
+                            <div class="worship-item">
+                                <i class="fas fa-dove"></i>
+                                <span>天堂安息</span>
+                            </div>
+                            <div class="worship-item">
+                                <i class="fas fa-candle-holder"></i>
+                                <span>点灯祈福</span>
+                            </div>
+                        </div>
+                        
+                        <div class="worship-record">
+                            <div class="record-item">
+                                <div class="record-avatar">
+                                    <img src="../images/avatar-2.jpg" alt="用户头像">
+                                </div>
+                                <div class="record-content">
+                                    <div class="record-header">
+                                        <div class="record-name">张明</div>
+                                        <div class="record-time">今天 10:24</div>
+                                    </div>
+                                    <div class="record-text">陈老师，您教导的知识和做人的道理我永远不会忘记。愿您在天堂安息。</div>
+                                </div>
+                            </div>
+                            
+                            <div class="record-item">
+                                <div class="record-avatar">
+                                    <img src="../images/avatar-3.jpg" alt="用户头像">
+                                </div>
+                                <div class="record-content">
+                                    <div class="record-header">
+                                        <div class="record-name">李华</div>
+                                        <div class="record-time">昨天 16:38</div>
+                                    </div>
+                                    <div class="record-text">忠华叔叔，您是我们家族的骄傲，永远怀念您。</div>
+                                </div>
+                            </div>
+                            
+                            <div class="record-item">
+                                <div class="record-avatar">
+                                    <img src="../images/avatar-4.jpg" alt="用户头像">
+                                </div>
+                                <div class="record-content">
+                                    <div class="record-header">
+                                        <div class="record-name">王老师</div>
+                                        <div class="record-time">3天前</div>
+                                    </div>
+                                    <div class="record-text">老同事一路走好，我们会继续您未完成的教育事业。</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="worship-form">
+                            <input type="text" class="worship-input" placeholder="写下您的思念...">
+                            <button class="worship-send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                发送
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="load-more">
+                    - 到底了 -
+                </div>
+            </div>
+            
+            <!-- 音乐播放器 -->
+            <div class="music-player">
+                <div class="music-info">
+                    <div class="music-name">送别</div>
+                    <div class="music-artist">李叔同</div>
+                </div>
+                <div class="music-controls">
+                    <div class="music-control">
+                        <i class="fas fa-pause"></i>
+                    </div>
+                    <div class="music-control">
+                        <i class="fas fa-step-forward"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 返回按钮事件
+            document.querySelector('.back').addEventListener('click', function() {
+                window.location.href = 'memorial-hall.html';
+            });
+            
+            // 分享按钮事件
+            document.querySelector('.right-action').addEventListener('click', function() {
+                alert('分享功能即将上线');
+            });
+            
+            // 功能按钮点击事件
+            document.getElementById('worshipBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('祭拜功能已开启');
+                document.querySelector('.worship-area').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            document.getElementById('memoryBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('留言功能已开启');
+                document.querySelector('.worship-form .worship-input').focus();
+            });
+            
+            document.getElementById('photoBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('相册功能已开启');
+                // 这里可以跳转到相册页面或打开相册弹窗
+            });
+            
+            document.getElementById('musicBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('音乐播放器已开启');
+                // 这里可以控制音乐播放器的显示/隐藏
+            });
+            
+            // 祭扫表单提交
+            document.querySelector('.worship-send-btn').addEventListener('click', function() {
+                const input = document.querySelector('.worship-input');
+                const text = input.value.trim();
+                
+                if (text) {
+                    alert('留言已发送');
+                    input.value = '';
+                    // 这里可以添加留言到列表中
+                } else {
+                    alert('请输入留言内容');
+                }
+            });
+            
+            // 生平介绍展开/收起
+            document.querySelector('.bio-collapse').addEventListener('click', function() {
+                const bioText = document.querySelector('.bio-text');
+                const collapseBtn = document.querySelector('.bio-collapse');
+                
+                if (bioText.style.maxHeight) {
+                    bioText.style.maxHeight = null;
+                    collapseBtn.innerHTML = '展开 <i class="fas fa-chevron-down"></i>';
+                } else {
+                    bioText.style.maxHeight = bioText.scrollHeight + 'px';
+                    collapseBtn.innerHTML = '收起 <i class="fas fa-chevron-up"></i>';
+                }
+            });
+            
+            // 音乐播放器控制
+            document.querySelector('.music-control').addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-pause')) {
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                    // 这里可以暂停音乐
+                } else {
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                    // 这里可以播放音乐
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

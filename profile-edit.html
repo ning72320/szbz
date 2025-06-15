@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑个人资料 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .profile-edit-container {
+            padding-bottom: 20px;
+        }
+        
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .back-btn {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 500;
+            flex: 1;
+            text-align: center;
+            margin-right: 35px;
+        }
+        
+        .save-btn {
+            color: white;
+            font-size: 16px;
+        }
+        
+        .profile-edit-content {
+            margin-top: 60px;
+            padding: 0 15px;
+        }
+        
+        .edit-section {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            font-size: 13px;
+            color: #999;
+            padding: 15px 15px 10px;
+        }
+        
+        .edit-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .edit-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            right: 15px;
+            bottom: 0;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+        
+        .edit-label {
+            width: 80px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .edit-input {
+            flex: 1;
+            border: none;
+            font-size: 16px;
+            color: #333;
+            text-align: right;
+            background: transparent;
+            padding: 0;
+        }
+        
+        .edit-input::placeholder {
+            color: #999;
+        }
+        
+        .edit-input:focus {
+            outline: none;
+        }
+        
+        .edit-arrow {
+            margin-left: 10px;
+            color: #c8c8c8;
+            font-size: 14px;
+        }
+        
+        .avatar-edit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px 15px;
+        }
+        
+        .avatar-container {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: #eee;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-edit-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .avatar-container:hover .avatar-edit-overlay {
+            opacity: 1;
+        }
+        
+        .avatar-label {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .edit-textarea {
+            flex: 1;
+            border: none;
+            font-size: 16px;
+            color: #333;
+            background: transparent;
+            padding: 0;
+            resize: none;
+            text-align: right;
+            min-height: 60px;
+        }
+        
+        .edit-textarea:focus {
+            outline: none;
+        }
+        
+        .gender-radio {
+            display: flex;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        
+        .radio-item {
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-item input {
+            margin-right: 5px;
+        }
+        
+        .gender-label {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        #avatarInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="content profile-edit-container">
+            <div class="page-header">
+                <a href="javascript:history.back()" class="back-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <div class="page-title">编辑个人资料</div>
+                <a href="javascript:void(0)" class="save-btn" id="saveProfile">保存</a>
+            </div>
+            
+            <div class="profile-edit-content">
+                <div class="edit-section">
+                    <div class="avatar-edit">
+                        <div class="avatar-container" id="avatarContainer">
+                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="头像" class="avatar-img" id="avatarPreview">
+                            <div class="avatar-edit-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <input type="file" id="avatarInput" accept="image/*">
+                        </div>
+                        <div class="avatar-label">点击更换头像</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">基本信息</div>
+                <div class="edit-section">
+                    <div class="edit-item">
+                        <div class="edit-label">昵称</div>
+                        <input type="text" class="edit-input" id="nickName" placeholder="请输入昵称" value="张小红">
+                    </div>
+                    <div class="edit-item">
+                        <div class="edit-label">性别</div>
+                        <div class="gender-radio">
+                            <label class="radio-item">
+                                <input type="radio" name="gender" value="male">
+                                <span class="gender-label">男</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="gender" value="female" checked>
+                                <span class="gender-label">女</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="edit-item">
+                        <div class="edit-label">生日</div>
+                        <input type="date" class="edit-input" id="birthday" value="1990-01-01">
+                    </div>
+                </div>
+                
+                <div class="section-title">联系方式</div>
+                <div class="edit-section">
+                    <div class="edit-item">
+                        <div class="edit-label">手机号</div>
+                        <div class="edit-input">138****5678</div>
+                        <div class="edit-arrow" id="changePhone">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="edit-item">
+                        <div class="edit-label">邮箱</div>
+                        <input type="email" class="edit-input" id="email" placeholder="请输入邮箱" value="example@mail.com">
+                    </div>
+                </div>
+                
+                <div class="section-title">其他信息</div>
+                <div class="edit-section">
+                    <div class="edit-item">
+                        <div class="edit-label">地区</div>
+                        <input type="text" class="edit-input" id="region" placeholder="请选择地区" value="四川省 泸州市" readonly>
+                        <div class="edit-arrow" id="selectRegion">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="edit-item" style="align-items: flex-start;">
+                        <div class="edit-label">个人简介</div>
+                        <textarea class="edit-textarea" id="bio" placeholder="请输入个人简介">数字殡葬平台用户，喜欢传统文化和祭祀活动。</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 头像上传
+            const avatarContainer = document.getElementById('avatarContainer');
+            const avatarInput = document.getElementById('avatarInput');
+            const avatarPreview = document.getElementById('avatarPreview');
+            
+            avatarContainer.addEventListener('click', function() {
+                avatarInput.click();
+            });
+            
+            avatarInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                        showToast('头像已更新，点击保存生效');
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // 保存资料
+            document.getElementById('saveProfile').addEventListener('click', function() {
+                const nickName = document.getElementById('nickName').value;
+                const gender = document.querySelector('input[name="gender"]:checked').value;
+                const birthday = document.getElementById('birthday').value;
+                const email = document.getElementById('email').value;
+                const region = document.getElementById('region').value;
+                const bio = document.getElementById('bio').value;
+                
+                // 表单验证
+                if (!nickName) {
+                    showToast('请填写昵称');
+                    return;
+                }
+                
+                // 这里可以发送数据到服务器保存
+                console.log({
+                    nickName,
+                    gender,
+                    birthday,
+                    email,
+                    region,
+                    bio
+                });
+                
+                showLoading('保存中...');
+                
+                // 模拟请求
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('保存成功');
+                    
+                    // 保存成功后返回上一页
+                    setTimeout(() => {
+                        history.back();
+                    }, 1000);
+                }, 1500);
+            });
+            
+            // 修改手机号
+            document.getElementById('changePhone').addEventListener('click', function() {
+                showToast('该功能暂未开放');
+            });
+            
+            // 选择地区
+            document.getElementById('selectRegion').addEventListener('click', function() {
+                showToast('该功能暂未开放');
+            });
+        });
+    </script>
+</body>
+</html> 

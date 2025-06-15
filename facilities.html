@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>殡葬机构</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color-light: rgba(255, 152, 0, 0.1);
+            --primary-color: #FF9800;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #f8f8f8;
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 932px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background-color: #f8f8f8;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 90px;
+        }
+        
+        .header {
+            position: relative;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 20px 15px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .header-title {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-subtitle {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            margin: -20px 20px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-box {
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .search-icon {
+            color: #999;
+            margin-right: 10px;
+        }
+        
+        .search-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .map-container {
+            margin: 0 20px 20px;
+            height: 200px;
+            background-color: #e9e9e9;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .map-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 15px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .map-text {
+            display: flex;
+            align-items: center;
+        }
+        
+        .map-icon {
+            margin-right: 5px;
+        }
+        
+        .category-tabs {
+            display: flex;
+            padding: 0 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-tab {
+            flex: 0 0 auto;
+            padding: 8px 18px;
+            margin: 0 5px;
+            background-color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .category-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .facility-list {
+            padding: 0 20px;
+        }
+        
+        .facility-card {
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        .facility-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .facility-info {
+            padding: 15px;
+        }
+        
+        .facility-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .facility-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .facility-type {
+            display: inline-block;
+            background-color: var(--primary-color-light);
+            color: var(--primary-color);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .facility-rating {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+        
+        .rating-stars {
+            color: #FFC107;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        
+        .rating-score {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .facility-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .facility-detail {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .detail-icon {
+            color: #999;
+            width: 16px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .detail-text {
+            flex: 1;
+        }
+        
+        .facility-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+        
+        .facility-services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .service-tag {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .facility-action {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .action-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+        }
+        
+        .loading-more {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .empty-results {
+            padding: 40px 0;
+            text-align: center;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        
+        .dynamic-island {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 20px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 99;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon,
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <!-- Dynamic Island模拟 -->
+        <div class="dynamic-island"></div>
+        
+        <div class="content">
+            <div class="header">
+                <a href="index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-title">殡葬机构</div>
+                <div class="header-subtitle">查找周边殡仪馆、火葬场、墓地等服务</div>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="搜索殡葬机构名称或地址">
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <img src="../images/facilities-map.jpg" alt="地图" class="map-img">
+                <div class="map-overlay">
+                    <div class="map-text">
+                        <i class="fas fa-map-marker-alt map-icon"></i>
+                        <span>附近共有 28 家殡葬服务机构</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category-tabs">
+                <div class="category-tab active">全部</div>
+                <div class="category-tab">殡仪馆</div>
+                <div class="category-tab">火葬场</div>
+                <div class="category-tab">公墓陵园</div>
+                <div class="category-tab">骨灰堂</div>
+                <div class="category-tab">生态墓园</div>
+            </div>
+            
+            <div class="facility-list">
+                <div class="facility-card">
+                    <img src="../images/facility-1.jpg" alt="泸州市殡仪馆" class="facility-image">
+                    <div class="facility-info">
+                        <div class="facility-header">
+                            <div>
+                                <div class="facility-name">泸州市殡仪馆</div>
+                                <span class="facility-type">殡仪馆</span>
+                            </div>
+                            <div class="facility-rating">
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="rating-score">4.5</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facility-details">
+                            <div class="facility-detail">
+                                <i class="fas fa-map-marker-alt detail-icon"></i>
+                                <div class="detail-text">泸州市江阳区蓝田街道万安路189号</div>
+                            </div>
+                            <div class="facility-detail">
+                                <i class="fas fa-phone detail-icon"></i>
+                                <div class="detail-text">0830-2345678</div>
+                            </div>
+                            <div class="facility-detail">
+                                <i class="fas fa-clock detail-icon"></i>
+                                <div class="detail-text">24小时服务</div>
+                            </div>
+                        </div>
+                        
+                        <div class="facility-footer">
+                            <div class="facility-services">
+                                <span class="service-tag">遗体接运</span>
+                                <span class="service-tag">遗体防腐</span>
+                                <span class="service-tag">告别厅</span>
+                                <span class="service-tag">守灵厅</span>
+                            </div>
+                            <div class="facility-action">
+                                <div class="action-btn">
+                                    <i class="fas fa-phone-alt action-icon"></i>
+                                    <span>电话</span>
+                                </div>
+                                <div class="action-btn">
+                                    <i class="fas fa-directions action-icon"></i>
+                                    <span>导航</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="facility-card">
+                    <img src="../images/facility-2.jpg" alt="泸州市公墓管理处" class="facility-image">
+                    <div class="facility-info">
+                        <div class="facility-header">
+                            <div>
+                                <div class="facility-name">泸州市龙城公墓</div>
+                                <span class="facility-type">公墓陵园</span>
+                            </div>
+                            <div class="facility-rating">
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-score">4.0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facility-details">
+                            <div class="facility-detail">
+                                <i class="fas fa-map-marker-alt detail-icon"></i>
+                                <div class="detail-text">泸州市江阳区丹林镇玉带山南路56号</div>
+                            </div>
+                            <div class="facility-detail">
+                                <i class="fas fa-phone detail-icon"></i>
+                                <div class="detail-text">0830-2876543</div>
+                            </div>
+                            <div class="facility-detail">
+                                <i class="fas fa-clock detail-icon"></i>
+                                <div class="detail-text">08:30-17:30 (周一至周日)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="facility-footer">
+                            <div class="facility-services">
+                                <span class="service-tag">墓地销售</span>
+                                <span class="service-tag">骨灰安葬</span>
+                                <span class="service-tag">墓碑刻字</span>
+                                <span class="service-tag">祭扫服务</span>
+                            </div>
+                            <div class="facility-action">
+                                <div class="action-btn">
+                                    <i class="fas fa-phone-alt action-icon"></i>
+                                    <span>电话</span>
+                                </div>
+                                <div class="action-btn">
+                                    <i class="fas fa-directions action-icon"></i>
+                                    <span>导航</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="facility-card">
+                    <img src="../images/facility-3.jpg" alt="泸州市生态陵园" class="facility-image">
+                    <div class="facility-info">
+                        <div class="facility-header">
+                            <div>
+                                <div class="facility-name">泸州市绿色生态陵园</div>
+                                <span class="facility-type">生态墓园</span>
+                            </div>
+                            <div class="facility-rating">
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="rating-score">4.9</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facility-details">
+                            <div class="facility-detail">
+                                <i class="fas fa-map-marker-alt detail-icon"></i>
+                                <div class="detail-text">泸州市龙马潭区长安镇松林山路128号</div>
+                            </div>
+                            <div class="facility-detail">
+                                <i class="fas fa-phone detail-icon"></i>
+                                <div class="detail-text">0830-3567890</div>
+                            </div>
+                            <div class="facility-detail">
+                                <i class="fas fa-clock detail-icon"></i>
+                                <div class="detail-text">09:00-17:00 (周一至周日)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="facility-footer">
+                            <div class="facility-services">
+                                <span class="service-tag">树葬</span>
+                                <span class="service-tag">花葬</span>
+                                <span class="service-tag">草坪葬</span>
+                                <span class="service-tag">生态安葬</span>
+                            </div>
+                            <div class="facility-action">
+                                <div class="action-btn">
+                                    <i class="fas fa-phone-alt action-icon"></i>
+                                    <span>电话</span>
+                                </div>
+                                <div class="action-btn">
+                                    <i class="fas fa-directions action-icon"></i>
+                                    <span>导航</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="loading-more">上拉加载更多</div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="tab-bar">
+            <div class="tab-item" data-page="index.html">
+                <i class="tab-icon fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-page="funeral-manager.html">
+                <i class="tab-icon fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item" data-page="profile.html">
+                <i class="tab-icon fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面链接
+            initPageLinks();
+            
+            // 初始化底部导航
+            initTabBar();
+            
+            // 搜索功能
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('focus', function() {
+                this.placeholder = '';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.placeholder = '搜索殡葬机构名称或地址';
+            });
+            
+            // 切换分类标签
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    // 为当前点击的标签添加active类
+                    this.classList.add('active');
+                    
+                    // 这里可以添加根据分类加载不同机构的逻辑
+                });
+            });
+            
+            // 电话按钮点击事件
+            const phoneButtons = document.querySelectorAll('.action-btn:first-child');
+            phoneButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const phone = this.closest('.facility-info').querySelector('.facility-detail:nth-child(2) .detail-text').textContent;
+                    alert('正在拨打电话: ' + phone);
+                });
+            });
+            
+            // 导航按钮点击事件
+            const navButtons = document.querySelectorAll('.action-btn:nth-child(2)');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const address = this.closest('.facility-info').querySelector('.facility-detail:first-child .detail-text').textContent;
+                    alert('正在导航至: ' + address);
+                });
+            });
+            
+            // 机构卡片点击事件
+            const facilityCards = document.querySelectorAll('.facility-card');
+            facilityCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const facilityName = this.querySelector('.facility-name').textContent;
+                    alert('查看 ' + facilityName + ' 的详细信息');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

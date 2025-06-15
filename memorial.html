@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线纪念馆 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .memorial-header {
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .memorial-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .memorial-subtitle {
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        
+        .memorial-tabs {
+            display: flex;
+            background-color: white;
+            border-radius: 8px 8px 0 0;
+            margin: 0 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .memorial-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            color: var(--text-color);
+            position: relative;
+        }
+        
+        .memorial-tab.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .memorial-tab.active:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        .memorial-cards {
+            padding: 10px;
+        }
+        
+        .memorial-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .memorial-cover {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .memorial-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .memorial-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 15px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .memorial-name {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .memorial-dates {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+        
+        .memorial-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .memorial-meta-item {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .memorial-meta-item i {
+            margin-right: 4px;
+        }
+        
+        .memorial-content {
+            padding: 15px;
+        }
+        
+        .memorial-quote {
+            font-size: 15px;
+            font-style: italic;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            line-height: 1.5;
+            position: relative;
+            padding-left: 10px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .memorial-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px 15px;
+        }
+        
+        .memorial-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-color);
+        }
+        
+        .memorial-action-btn i {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .memorial-empty {
+            padding: 40px 20px;
+            text-align: center;
+            background-color: white;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .memorial-empty-icon {
+            font-size: 50px;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+        
+        .memorial-empty-title {
+            font-size: 16px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        
+        .memorial-empty-desc {
+            font-size: 14px;
+            color: var(--text-color-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .create-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .create-btn i {
+            margin-right: 5px;
+        }
+        
+        .fab-button {
+            position: fixed;
+            right: 20px;
+            bottom: 70px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+        
+        .fab-button i {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">在线纪念馆</div>
+        </div>
+        
+        <div class="content">
+            <div class="memorial-header">
+                <div class="memorial-title">数字化纪念缅怀空间</div>
+                <div class="memorial-subtitle">创建永久的数字纪念空间，传承逝者记忆，留下永恒思念</div>
+            </div>
+            
+            <div class="memorial-tabs">
+                <div class="memorial-tab active" data-tab="my">我的纪念馆</div>
+                <div class="memorial-tab" data-tab="public">公共纪念馆</div>
+            </div>
+            
+            <div id="my-tab-content" class="tab-content">
+                <div class="memorial-empty">
+                    <div class="memorial-empty-icon">
+                        <i class="fas fa-monument"></i>
+                    </div>
+                    <div class="memorial-empty-title">您还没有创建纪念馆</div>
+                    <div class="memorial-empty-desc">
+                        创建数字纪念馆，上传照片和生平事迹，<br>以数字方式永久纪念和缅怀逝者
+                    </div>
+                    <button class="create-btn">
+                        <i class="fas fa-plus"></i>创建纪念馆
+                    </button>
+                </div>
+            </div>
+            
+            <div id="public-tab-content" class="tab-content" style="display: none;">
+                <div class="memorial-cards">
+                    <!-- 纪念馆1 -->
+                    <div class="memorial-card">
+                        <div class="memorial-cover">
+                            <img src="https://images.unsplash.com/photo-1469571486292-b53601010b75?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="纪念馆封面">
+                            <div class="memorial-overlay">
+                                <div class="memorial-name">张伟明 先生纪念馆</div>
+                                <div class="memorial-dates">1945.03.15 - 2022.05.20</div>
+                                <div class="memorial-meta">
+                                    <div class="memorial-meta-item">
+                                        <i class="fas fa-eye"></i>5683次祭奠
+                                    </div>
+                                    <div class="memorial-meta-item">
+                                        <i class="fas fa-calendar-alt"></i>创建于2022.06.05
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="memorial-content">
+                            <div class="memorial-quote">
+                                一生勤勉，为人正直，家教严谨，桃李满园。退休后热爱旅行和摄影，记录祖国大好河山。永远怀念我们敬爱的父亲、爷爷。
+                            </div>
+                        </div>
+                        <div class="memorial-actions">
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-flower"></i>
+                                献花
+                            </div>
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-comment-alt"></i>
+                                留言
+                            </div>
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-candle"></i>
+                                点烛
+                            </div>
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-share-alt"></i>
+                                分享
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 纪念馆2 -->
+                    <div class="memorial-card">
+                        <div class="memorial-cover">
+                            <img src="https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="纪念馆封面">
+                            <div class="memorial-overlay">
+                                <div class="memorial-name">李秀英 女士纪念馆</div>
+                                <div class="memorial-dates">1950.07.23 - 2023.01.12</div>
+                                <div class="memorial-meta">
+                                    <div class="memorial-meta-item">
+                                        <i class="fas fa-eye"></i>3241次祭奠
+                                    </div>
+                                    <div class="memorial-meta-item">
+                                        <i class="fas fa-calendar-alt"></i>创建于2023.02.01
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="memorial-content">
+                            <div class="memorial-quote">
+                                母爱如水，细腻温柔。作为妇产科医生，她助无数新生命到来，被病人称为"天使"。退休后仍热心社区服务，关爱老人和儿童。永远思念我们的母亲。
+                            </div>
+                        </div>
+                        <div class="memorial-actions">
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-flower"></i>
+                                献花
+                            </div>
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-comment-alt"></i>
+                                留言
+                            </div>
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-candle"></i>
+                                点烛
+                            </div>
+                            <div class="memorial-action-btn">
+                                <i class="fas fa-share-alt"></i>
+                                分享
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 悬浮创建按钮 -->
+            <div class="fab-button">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+        
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab-item" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-page="funeral-manager">
+                <i class="fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item active" data-page="memorial">
+                <i class="fas fa-monument"></i>
+                <span>在线纪念</span>
+            </div>
+            <div class="tab-item" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化返回按钮
+            initBackButtons();
+            
+            // 初始化标签页
+            const tabs = document.querySelectorAll('.memorial-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // 更新标签激活状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 显示对应的内容区域
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(`${tabId}-tab-content`).style.display = 'block';
+                });
+            });
+            
+            // 初始化底部导航栏
+            initTabBar();
+            
+            // 创建纪念馆按钮
+            const createButtons = document.querySelectorAll('.create-btn, .fab-button');
+            createButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showToast('即将跳转至创建纪念馆页面');
+                    // 这里可以跳转到创建纪念馆的页面
+                    // window.location.href = 'create-memorial.html';
+                });
+            });
+            
+            // 献花、留言、点烛、分享按钮
+            document.querySelectorAll('.memorial-action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    showToast(`您点击了${action}按钮`);
+                });
+            });
+            
+            // 纪念馆卡片点击
+            document.querySelectorAll('.memorial-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // 如果点击的是操作按钮，不执行跳转
+                    if (e.target.closest('.memorial-actions')) {
+                        return;
+                    }
+                    
+                    const name = this.querySelector('.memorial-name').textContent;
+                    showToast(`即将进入${name}`);
+                    // 这里可以跳转到纪念馆详情页
+                    // window.location.href = 'memorial-detail.html?id=123';
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

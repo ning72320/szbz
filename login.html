@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .login-header {
+            text-align: center;
+            padding: 40px 0 30px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            border-radius: 20px;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo i {
+            font-size: 48px;
+            color: white;
+        }
+        
+        .app-name {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .app-desc {
+            margin-top: 6px;
+            font-size: 14px;
+            color: var(--text-color-light);
+        }
+        
+        .login-form {
+            padding: 0 20px;
+        }
+        
+        .input-container {
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .login-actions {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 5px;
+            font-size: 14px;
+        }
+        
+        .register-link, .forget-link {
+            color: var(--text-color-light);
+        }
+        
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background-color: #ebedf0;
+        }
+        
+        .divider-text {
+            padding: 0 15px;
+            color: var(--text-color-light);
+            font-size: 14px;
+        }
+        
+        .wechat-login {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .wechat-btn {
+            width: 50px;
+            height: 50px;
+            background-color: #07C160;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 26px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="content" style="height: 100%;">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-pagelines"></i>
+                </div>
+                <div class="app-name">数字殡葬平台</div>
+                <div class="app-desc">民政局智慧殡葬服务</div>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="input-container">
+                    <div class="input-group input-group-line">
+                        <div class="input-label"><i class="fas fa-mobile-alt" style="width: 20px;"></i></div>
+                        <input type="tel" name="phone" class="input" placeholder="请输入手机号" maxlength="11">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-label"><i class="fas fa-lock" style="width: 20px;"></i></div>
+                        <input type="password" name="password" class="input" placeholder="请输入密码">
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-primary" id="loginBtn">登录</button>
+                
+                <div class="login-actions">
+                    <a href="register.html" class="register-link">注册账号</a>
+                    <a href="#" class="forget-link">忘记密码?</a>
+                </div>
+                
+                <div class="or-divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">其他登录方式</div>
+                    <div class="divider-line"></div>
+                </div>
+                
+                <div class="wechat-login">
+                    <div class="wechat-btn">
+                        <i class="fab fa-weixin"></i>
+                    </div>
+                </div>
+            </form>
+            
+            <div style="text-align: center; font-size: 12px; color: #999; margin-top: 40px;">
+                登录即表示您已同意<a href="#" style="color: var(--primary-color);">《用户协议》</a>和<a href="#" style="color: var(--primary-color);">《隐私政策》</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginBtn.addEventListener('click', function() {
+                const isValid = validateForm('loginForm', {
+                    phone: {
+                        required: true,
+                        phone: true,
+                        message: '请输入有效的手机号码'
+                    },
+                    password: {
+                        required: true,
+                        message: '请输入密码'
+                    }
+                });
+                
+                if (isValid) {
+                    // 模拟登录请求
+                    showLoading();
+                    
+                    setTimeout(() => {
+                        hideLoading();
+                        // 登录成功，跳转到首页
+                        window.location.href = 'home.html';
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

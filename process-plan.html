@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流程计划 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .plan-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--secondary-color), #64b5f6);
+            color: white;
+            text-align: center;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .plan-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .plan-desc {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .plan-info {
+            background-color: white;
+            border-radius: 10px;
+            margin: 15px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: var(--text-color-light);
+            font-size: 14px;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0 15px;
+            margin-bottom: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        
+        .timeline-section {
+            margin: 0 15px 15px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: var(--secondary-color);
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 15px;
+            width: 2px;
+            background-color: #e8e8e8;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            background-color: #e8e8e8;
+        }
+        
+        .timeline-item.red .timeline-dot {
+            background-color: var(--danger-color);
+        }
+        
+        .timeline-item.blue .timeline-dot {
+            background-color: var(--secondary-color);
+        }
+        
+        .timeline-content {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timeline-title .tag {
+            margin-left: 8px;
+        }
+        
+        .timeline-desc {
+            font-size: 13px;
+            color: var(--text-color-light);
+            line-height: 1.5;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: var(--text-color-light);
+            margin-top: 8px;
+        }
+        
+        .timeline-actions {
+            display: flex;
+            margin-top: 10px;
+        }
+        
+        .timeline-btn {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+            color: var(--secondary-color);
+            background-color: rgba(30, 136, 229, 0.1);
+            border: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timeline-btn i {
+            margin-right: 4px;
+        }
+        
+        .action-btns {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            margin: 0 5px;
+        }
+        
+        .action-btn.outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .summary-card {
+            background-color: white;
+            border-radius: 10px;
+            margin: 15px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .summary-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .summary-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .summary-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            margin-right: 10px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+        
+        .summary-content {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">定制流程计划</div>
+            <i class="fas fa-share-alt" style="position: absolute; right: 15px;"></i>
+        </div>
+        
+        <div class="content">
+            <div class="plan-header">
+                <div class="plan-title">张先生的白事服务方案</div>
+                <div class="plan-desc">根据您的需求，我们为您定制了以下服务流程</div>
+            </div>
+            
+            <div class="plan-info">
+                <div class="info-row">
+                    <div class="info-label">创建时间</div>
+                    <div class="info-value">2023-10-20</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">服务类型</div>
+                    <div class="info-value">标准舒适型</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">预算范围</div>
+                    <div class="info-value">¥20,000</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">宗教需求</div>
+                    <div class="info-value">佛教传统仪式</div>
+                </div>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--danger-color);"></div>
+                    <span>政府必办</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--secondary-color);"></div>
+                    <span>市场可选</span>
+                </div>
+            </div>
+            
+            <div class="timeline-section">
+                <div class="section-title">
+                    <i class="fas fa-clipboard-list"></i>白事服务流程
+                </div>
+                
+                <div class="timeline">
+                    <!-- 流程项目 1 -->
+                    <div class="timeline-item red">
+                        <div class="timeline-dot">1</div>
+                        <div class="timeline-content" >
+                            <div class="timeline-title">
+                                死亡证明申报
+                                <span class="tag node-tag-red">必办</span>
+                            </div>
+                            <div class="timeline-desc">
+                                在医院或社区卫生服务中心开具死亡证明，是后续所有手续的前提。
+                            </div>
+                            <div class="timeline-time">
+                                <i class="far fa-clock"></i> 死亡后24小时内办理
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="timeline-btn">
+                                <i class="fas fa-file-alt"></i>所需材料
+                            </button>
+                            <button class="timeline-btn">
+                                <i class="fas fa-map-marker-alt"></i>办理地点
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 流程项目 2 -->
+                    <div class="timeline-item blue">
+                        <div class="timeline-dot">2</div>
+                        <div class="timeline-content" >
+                            <div class="timeline-title">
+                                遗体接运
+                                <span class="tag node-tag-blue">可选</span>
+                            </div>
+                            <div class="timeline-desc">
+                                由专业殡仪车辆将遗体从医院或家中接运至殡仪馆。
+                            </div>
+                            <div class="timeline-time">
+                                <i class="far fa-clock"></i> 死亡证明开具后安排
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="timeline-btn" >
+                                <i class="fas fa-building"></i>服务机构
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 流程项目 3 -->
+                    <div class="timeline-item red">
+                        <div class="timeline-dot">3</div>
+                        <div class="timeline-content" >
+                            <div class="timeline-title">
+                                火化许可申请
+                                <span class="tag node-tag-red">必办</span>
+                            </div>
+                            <div class="timeline-desc">
+                                前往殡仪馆或民政部门办理火化许可证，是合法火化的必要手续。
+                            </div>
+                            <div class="timeline-time">
+                                <i class="far fa-clock"></i> 死亡后3日内办理
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="timeline-btn">
+                                <i class="fas fa-file-alt"></i>所需材料
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 流程项目 4 -->
+                    <div class="timeline-item blue">
+                        <div class="timeline-dot">4</div>
+                        <div class="timeline-content" >
+                            <div class="timeline-title">
+                                佛教超度仪式
+                                <span class="tag node-tag-blue">可选</span>
+                            </div>
+                            <div class="timeline-desc">
+                                根据佛教传统，由法师主持诵经、超度，为逝者祈福。
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="timeline-btn" >
+                                <i class="fas fa-building"></i>寺庙推荐
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" style="text-align: center; padding: 10px 0;">
+                        <span style="color: var(--text-color-light); font-size: 13px;">点击查看全部17个流程节点 <i class="fas fa-chevron-down"></i></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <div class="summary-title">流程要点提示</div>
+                
+                <div class="summary-item">
+                    <div class="summary-icon"><i class="fas fa-exclamation"></i></div>
+                    <div class="summary-content">死亡证明必须在死亡后24小时内办理，请及时准备相关证件</div>
+                </div>
+                
+                <div class="summary-item">
+                    <div class="summary-icon"><i class="fas fa-exclamation"></i></div>
+                    <div class="summary-content">火化许可证需在死亡后3日内办理，超期将增加办理难度</div>
+                </div>
+                
+                <div class="summary-item">
+                    <div class="summary-icon"><i class="fas fa-info"></i></div>
+                    <div class="summary-content">佛教仪式可提前与寺庙联系，安排法师时间</div>
+                </div>
+                
+                <div class="summary-item">
+                    <div class="summary-icon"><i class="fas fa-info"></i></div>
+                    <div class="summary-content">如需墓地，建议提前选择并预约，高峰期可能需排队</div>
+                </div>
+            </div>
+            
+            <div class="action-btns">
+                <button class="btn btn-default action-btn outline" data-link="questionnaire.html">修改需求</button>
+                <button class="btn btn-primary action-btn">立即预约</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面链接
+            initPageLinks();
+            
+            // 初始化返回按钮
+            initBackButtons();
+            
+            // 流程内容点击
+            document.querySelectorAll('.timeline-content').forEach(item => {
+                item.addEventListener('click', function() {
+                    const link = this.getAttribute('data-link');
+                    if (link) {
+                        window.location.href = link;
+                    }
+                });
+            });
+            
+            // 按钮点击
+            document.querySelectorAll('.timeline-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 防止触发父元素的点击事件
+                    
+                    const link = this.getAttribute('data-link');
+                    if (link) {
+                        window.location.href = link;
+                    } else {
+                        // 显示相关信息弹窗
+                        if (this.textContent.includes('所需材料')) {
+                            showConfirm('所需材料', '1. 死者身份证原件<br>2. 家属身份证原件<br>3. 病历或死亡证明');
+                        } else if (this.textContent.includes('办理地点')) {
+                            showConfirm('办理地点', '· 殡仪馆接待处<br>· 社区卫生服务中心<br>· 医院殡葬服务点');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

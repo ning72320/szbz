@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据殡葬平台 - 政府驾驶舱</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #041633;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* 网格线背景 */
+        .grid-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(rgba(31, 85, 137, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(31, 85, 137, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+        }
+        
+        /* 大屏容器 */
+        .dashboard-container {
+            width: 100%;
+            height: 100vh;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            grid-template-rows: auto auto 1fr 1fr auto;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 顶部标题 */
+        .dashboard-header {
+            grid-column: 1 / span 3;
+            grid-row: 1;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .dashboard-title {
+            font-size: 32px;
+            background: linear-gradient(90deg, #0d54a6, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            padding: 0 50px;
+            text-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
+        }
+        
+        .dashboard-title::before,
+        .dashboard-title::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(0, 204, 255, 0), rgba(0, 204, 255, 0.8));
+        }
+        
+        .dashboard-title::before {
+            left: 0;
+        }
+        
+        .dashboard-title::after {
+            right: 0;
+            transform: rotate(180deg);
+        }
+        
+        /* 面板通用样式 */
+        .panel {
+            background-color: rgba(10, 43, 78, 0.7);
+            border: 1px solid rgba(31, 85, 137, 0.8);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* 面板头部 */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+            border-bottom: 1px solid rgba(31, 85, 137, 0.5);
+            background-color: rgba(31, 85, 137, 0.2);
+        }
+        
+        .panel-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .panel-title::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 2px;
+            height: 16px;
+            width: 3px;
+            background: var(--highlight-color, #00ccff);
+        }
+        
+        /* 面板标签页 */
+        .panel-tabs, .map-tabs {
+            display: flex;
+            font-size: 12px;
+        }
+        
+        .tab {
+            padding: 2px 8px;
+            margin-left: 5px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            opacity: 0.7;
+        }
+        
+        .tab:hover {
+            opacity: 1;
+        }
+        
+        .tab.active {
+            background-color: rgba(0, 204, 255, 0.2);
+            color: #00ccff;
+            opacity: 1;
+        }
+        
+        /* 图表容器 */
+        .chart-container {
+            flex: 1;
+            padding: 10px;
+        }
+        
+        /* 地图容器 */
+        .map-container {
+            position: relative;
+        }
+        
+        .map-inner {
+            position: relative;
+        }
+        
+        /* 数据流动效果 */
+        .data-flow {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: #00ccff;
+            border-radius: 50%;
+            opacity: 0.8;
+            box-shadow: 0 0 5px #00ccff;
+            animation: flow 2s linear forwards;
+        }
+        
+        @keyframes flow {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(var(--end-x), var(--end-y)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        /* 星星粒子 */
+        .star-particle {
+            position: fixed;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 15s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* 地图底部覆盖数据 */
+        .map-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 20px;
+        }
+        
+        .data-circle {
+            background: rgba(10, 43, 78, 0.7);
+            border: 1px solid var(--highlight-color, #00ccff);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
+        }
+        
+        .data-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--highlight-color, #00ccff);
+        }
+        
+        .data-label {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        
+        /* 紧急标记点 */
+        .emergency-marker {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(255, 77, 79, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        .marker-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ff4d4f;
+            color: #fff;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        /* 表格样式 */
+        .table-container {
+            padding: 5px 10px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 8px 5px;
+            text-align: left;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(31, 85, 137, 0.3);
+        }
+        
+        .data-table th {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: normal;
+        }
+        
+        .data-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .indicator-green {
+            background-color: #52c41a;
+        }
+        
+        .indicator-yellow {
+            background-color: #faad14;
+        }
+        
+        .indicator-red {
+            background-color: #ff4d4f;
+        }
+        
+        /* 临时信息动效 */
+        .random-anim-item {
+            position: absolute;
+            animation: fadeUp 3s forwards;
+        }
+        
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            80% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+        
+        /* 全局变量 */
+        :root {
+            --highlight-color: #00ccff;
+        }
+        
+        /* 自定义泸州市地图样式 */
+        .luzhou-map-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* 地图标签样式 */
+        .map-label {
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            text-shadow: 0 0 3px #000;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* 添加闪烁效果用于告警灵车 */
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 3D地图效果 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(20deg); }
+            50% { transform: translateY(-5px) rotateX(20deg); }
+        }
+
+        .map-area {
+            animation: pulse-map 4s infinite alternate;
+        }
+
+        @keyframes pulse-map {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .district-point {
+            animation: pulse-point 2s infinite;
+        }
+
+        @keyframes pulse-point {
+            0% { r: 5; opacity: 0.8; }
+            50% { r: 8; opacity: 1; }
+            100% { r: 5; opacity: 0.8; }
+        }
+
+        .district-label {
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- 网格线背景 -->
+    <div class="grid-lines"></div>
+    
+    <!-- 大屏容器 -->
+    <div class="dashboard-container">
+        <!-- 顶部标题 -->
+        <div class="dashboard-header" style="grid-column: 1 / span 3; grid-row: 1; margin-bottom: 5px;">
+            <h1 class="dashboard-title">智慧泸州·生命云窗</h1>
+        </div>
+        
+        <!-- 灵车调度图表面板 -->
+        <div class="panel" style="grid-column: 2; grid-row: 2; height: 150px;">
+            <div class="panel-header">
+                <div class="panel-title">灵车调度情况</div>
+                <div style="font-size: 12px; color: #00ccff;">今日调度：17次</div>
+            </div>
+            <div class="chart-container">
+                <div id="hearseChart" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+        
+        <!-- 全局预警面板 -->
+        <div class="panel" style="grid-column: 1; grid-row: 2; height: 150px;">
+            <div class="panel-header">
+                <div class="panel-title">全局预警</div>
+                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7);">更新于: 15分钟前</div>
+            </div>
+            <div style="padding: 10px; display: flex; flex-direction: column; gap: 5px; height: calc(100% - 38px); overflow: hidden;">
+                <div style="display: flex; align-items: center; font-size: 12px; color: #fff; background: rgba(255, 77, 79, 0.15); padding: 5px; border-radius: 4px;">
+                    <i class="fas fa-exclamation-triangle" style="color: #ff4d4f; margin-right: 8px; font-size: 14px;"></i>
+                    <div style="flex: 1;">突发死亡事件预警</div>
+                    <div style="background: rgba(255, 77, 79, 0.2); color: #ff4d4f; padding: 1px 6px; border-radius: 10px; font-weight: bold;">3起</div>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 12px; color: #fff; background: rgba(250, 173, 20, 0.15); padding: 5px; border-radius: 4px;">
+                    <i class="fas fa-clock" style="color: #faad14; margin-right: 8px; font-size: 14px;"></i>
+                    <div style="flex: 1;">灵车接运服务超时预警</div>
+                    <div style="background: rgba(250, 173, 20, 0.2); color: #faad14; padding: 1px 6px; border-radius: 10px; font-weight: bold;">5起</div>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 12px; color: #fff; background: rgba(30, 136, 229, 0.15); padding: 5px; border-radius: 4px;">
+                    <i class="fas fa-yen-sign" style="color: #1e88e5; margin-right: 8px; font-size: 14px;"></i>
+                    <div style="flex: 1;">价格异常预警</div>
+                    <div style="background: rgba(30, 136, 229, 0.2); color: #1e88e5; padding: 1px 6px; border-radius: 10px; font-weight: bold;">2起</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 政策执行情况面板 -->
+        <div class="panel" style="grid-column: 3; grid-row: 2; height: 150px;">
+            <div class="panel-header">
+                <div class="panel-title">政策执行情况</div>
+                <div style="font-size: 12px; color: #00ccff;">本月执行率: 92%</div>
+            </div>
+            <div style="padding: 8px; height: calc(100% - 38px);">
+                <div style="height: 100%; display: flex; flex-direction: column; gap: 6px;">
+                    <!-- 政策进度条区域 -->
+                    <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden;">
+                        <!-- 惠民政策 -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                                <span style="font-size: 12px; color: #fff;">惠民殡葬补贴发放</span>
+                                <span style="font-size: 12px; color: #52c41a;">95%</span>
+                            </div>
+                            <div style="height: 5px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                                <div class="policy-progress-bar" data-percent="95" style="width: 0%; height: 100%; background: linear-gradient(90deg, #52c41a, #52c41a80); border-radius: 3px; transition: width 1s ease-in-out;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- 绿色殡葬 -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                                <span style="font-size: 12px; color: #fff;">绿色生态殡葬推广</span>
+                                <span style="font-size: 12px; color: #00ccff;">88%</span>
+                            </div>
+                            <div style="height: 5px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                                <div class="policy-progress-bar" data-percent="88" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00ccff, #00ccff80); border-radius: 3px; transition: width 1s ease-in-out;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- 一站式服务 -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                                <span style="font-size: 12px; color: #fff;">一站式殡葬服务</span>
+                                <span style="font-size: 12px; color: #faad14;">76%</span>
+                            </div>
+                            <div style="height: 5px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                                <div class="policy-progress-bar" data-percent="76" style="width: 0%; height: 100%; background: linear-gradient(90deg, #faad14, #faad1480); border-radius: 3px; transition: width 1s ease-in-out;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- 殡葬服务价格管理 -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                                <span style="font-size: 12px; color: #fff;">殡葬服务价格管理</span>
+                                <span style="font-size: 12px; color: #1e88e5;">82%</span>
+                            </div>
+                            <div style="height: 5px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                                <div class="policy-progress-bar" data-percent="82" style="width: 0%; height: 100%; background: linear-gradient(90deg, #1e88e5, #1e88e580); border-radius: 3px; transition: width 1s ease-in-out;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 电子凭证服务开通面板 -->
+        <div class="panel" style="grid-column: 1; grid-row: 3;">
+            <div class="panel-header">
+                <div class="panel-title">服务类型分布</div>
+            </div>
+            
+            <!-- 统计图表 -->
+            <div class="chart-container" style="display: flex; flex-direction: column; height: 100%;">
+                <!-- 饼图区域 -->
+                <div style="flex: 1; width: 100%; position: relative; min-height: 150px;">
+                    <div id="serviceTypeChart" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                </div>
+                
+                <!-- 统计数字区域 -->
+                <div style="height: 40px; width: 100%; display: flex; justify-content: space-around; align-items: center; margin-top: 5px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 5px;">
+                    <div style="text-align: center; display: flex; flex-direction: column; align-items: center; width: 45%;">
+                        <div id="onlineApplicationValue" style="font-size: 18px; color: #00ccff; font-weight: bold; margin-bottom: 2px;">7834</div>
+                        <div style="font-size: 10px; color: #fff; opacity: 0.8;">线上办理</div>
+                    </div>
+                    <div style="height: 30px; width: 1px; background: rgba(255, 255, 255, 0.2);"></div>
+                    <div style="text-align: center; display: flex; flex-direction: column; align-items: center; width: 45%;">
+                        <div id="completionRateValue" style="font-size: 18px; color: #00ccff; font-weight: bold; margin-bottom: 2px;">89%</div>
+                        <div style="font-size: 10px; color: #fff; opacity: 0.8;">预约完成率</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 服务指标面板 -->
+        <div class="panel" style="grid-column: 1; grid-row: 4;">
+            <div class="panel-header">
+                <div class="panel-title">服务指标</div>
+                <div class="panel-tabs">
+                    <span class="tab active">服务进度</span>
+                    <span class="tab">响应时间</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div id="serviceProgressChart" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+        
+        <!-- 中央地图区域 -->
+        <div class="map-container panel" style="grid-column: 2; grid-row: 3 / span 2;">
+            <div class="panel-header">
+                <div class="panel-title">泸州市实时监控</div>
+                <div class="map-tabs">
+                    <span class="tab active">今日</span>
+                    <span class="tab">本周</span>
+                    <span class="tab">本月</span>
+                </div>
+            </div>
+            
+            <div class="map-inner" style="position: relative; height: calc(100% - 38px); overflow: hidden;">
+                <!-- 3D地图背景 -->
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; perspective: 1000px;">
+                    <svg width="100%" height="100%" viewBox="0 0 800 800" style="position: absolute; top: 0; left: 0; transform: rotateX(20deg);">
+                        <defs>
+                            <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:rgba(0,100,255,0.4)"/>
+                                <stop offset="100%" style="stop-color:rgba(0,200,255,0.2)"/>
+                            </linearGradient>
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="5" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                            <radialGradient id="districtGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                <stop offset="0%" style="stop-color:rgba(0, 204, 255, 0.8)"/>
+                                <stop offset="100%" style="stop-color:rgba(0, 204, 255, 0)"/>
+                            </radialGradient>
+                            <!-- 3D高度效果 -->
+                            <filter id="dropShadow" x="0" y="0" width="200%" height="200%">
+                                <feOffset result="offOut" in="SourceGraphic" dx="2" dy="2" />
+                                <feGaussianBlur result="blurOut" in="offOut" stdDeviation="5" />
+                                <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                            </filter>
+                        </defs>
+                        
+                        <!-- 更精确的泸州市地图轮廓 -->
+                        <!-- 江阳区 -->
+                        <path d="M410,285 L440,295 L455,320 L445,350 L420,360 L400,345 L385,335 L395,310 L410,285" 
+                              fill="url(#mapGradient)" stroke="rgba(0,204,255,0.8)" stroke-width="2" filter="url(#dropShadow)" class="map-area"/>
+                        
+                        <!-- 龙马潭区 -->
+                        <path d="M370,285 L410,285 L395,310 L385,335 L365,340 L350,320 L360,300 L370,285" 
+                              fill="url(#mapGradient)" stroke="rgba(0,204,255,0.8)" stroke-width="2" filter="url(#dropShadow)" class="map-area"/>
+                        
+                        <!-- 纳溪区 -->
+                        <path d="M440,295 L475,285 L495,310 L490,340 L470,360 L445,350 L455,320 L440,295" 
+                              fill="url(#mapGradient)" stroke="rgba(0,204,255,0.8)" stroke-width="2" filter="url(#dropShadow)" class="map-area"/>
+                        
+                        <!-- 泸县 -->
+                        <path d="M400,345 L420,360 L445,380 L435,410 L415,425 L385,415 L380,385 L385,365 L400,345" 
+                              fill="url(#mapGradient)" stroke="rgba(0,204,255,0.8)" stroke-width="2" filter="url(#dropShadow)" class="map-area"/>
+                        
+                        <!-- 合江县 -->
+                        <path d="M365,340 L385,335 L385,365 L380,385 L350,410 L330,400 L325,375 L335,355 L365,340" 
+                              fill="url(#mapGradient)" stroke="rgba(0,204,255,0.8)" stroke-width="2" filter="url(#dropShadow)" class="map-area"/>
+                        
+                        <!-- 叙永县 -->
+                        <path d="M415,425 L445,415 L470,430 L465,465 L435,485 L405,465 L400,440 L415,425" 
+                              fill="url(#mapGradient)" stroke="rgba(0,204,255,0.8)" stroke-width="2" filter="url(#dropShadow)" class="map-area"/>
+                        
+                        <!-- 古蔺县 -->
+                        <path d="M470,430 L505,415 L530,435 L535,470 L515,500 L480,495 L465,465 L470,430" 
+                              fill="url(#mapGradient)" stroke="rgba(0,204,255,0.8)" stroke-width="2" filter="url(#dropShadow)" class="map-area"/>
+                        
+                        <!-- 长江主干流 -->
+                        <path d="M320,280 C325,285 330,290 340,295 C360,305 380,310 400,315 C420,320 440,315 460,310 C480,305 500,300 520,310" 
+                              fill="none" stroke="rgba(0,204,255,0.6)" stroke-width="6" filter="url(#glow)" class="map-area" style="opacity:0.7"/>
+                        
+                        <!-- 沱江支流 -->
+                        <path d="M390,315 C395,325 400,340 405,360 C410,380 415,400 420,420" 
+                              fill="none" stroke="rgba(0,204,255,0.5)" stroke-width="4" filter="url(#glow)" class="map-area" style="opacity:0.7"/>
+                        
+                        <!-- 区县连接线 -->
+                        <line x1="410" y1="320" x2="370" y2="310" stroke="rgba(0,204,255,0.4)" stroke-width="1" stroke-dasharray="5,3"/>
+                        <line x1="410" y1="320" x2="460" y2="310" stroke="rgba(0,204,255,0.4)" stroke-width="1" stroke-dasharray="5,3"/>
+                        <line x1="410" y1="320" x2="410" y2="370" stroke="rgba(0,204,255,0.4)" stroke-width="1" stroke-dasharray="5,3"/>
+                        <line x1="410" y1="320" x2="365" y2="370" stroke="rgba(0,204,255,0.4)" stroke-width="1" stroke-dasharray="5,3"/>
+                        <line x1="410" y1="370" x2="430" y2="440" stroke="rgba(0,204,255,0.4)" stroke-width="1" stroke-dasharray="5,3"/>
+                        <line x1="430" y1="440" x2="490" y2="450" stroke="rgba(0,204,255,0.4)" stroke-width="1" stroke-dasharray="5,3"/>
+                        
+                        <!-- 区县点位 -->
+                        <circle cx="410" cy="320" r="8" fill="#00ccff" filter="url(#glow)" class="district-point"/>
+                        <text x="410" y="305" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="district-label">江阳区</text>
+                        
+                        <circle cx="370" cy="310" r="6" fill="#00ccff" filter="url(#glow)" class="district-point"/>
+                        <text x="370" y="295" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="district-label">龙马潭区</text>
+                        
+                        <circle cx="460" cy="310" r="6" fill="#00ccff" filter="url(#glow)" class="district-point"/>
+                        <text x="460" y="295" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="district-label">纳溪区</text>
+                        
+                        <circle cx="410" cy="370" r="5" fill="#00ccff" filter="url(#glow)" class="district-point"/>
+                        <text x="410" y="355" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="district-label">泸县</text>
+                        
+                        <circle cx="365" cy="370" r="5" fill="#00ccff" filter="url(#glow)" class="district-point"/>
+                        <text x="340" y="370" text-anchor="end" fill="white" font-size="12" font-weight="bold" class="district-label">合江县</text>
+                        
+                        <circle cx="430" cy="440" r="5" fill="#00ccff" filter="url(#glow)" class="district-point"/>
+                        <text x="430" y="425" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="district-label">叙永县</text>
+                        
+                        <circle cx="490" cy="450" r="5" fill="#00ccff" filter="url(#glow)" class="district-point"/>
+                        <text x="490" y="435" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="district-label">古蔺县</text>
+                    </svg>
+                </div>
+                
+                <!-- 3D图层效果 -->
+                <div class="luzhou-map-bg" style="background-image: url('https://img2.baidu.com/it/u=1812416025,1494174114&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=777'); z-index: 2; opacity: 0.2; transform: scale(1.05) translateY(-10px); filter: blur(1px);"></div>
+                
+                <!-- 散点数据图层 -->
+                <div id="mapChart" style="width: 100%; height: 100%; position: relative; z-index: 3;"></div>
+                
+                <!-- 灵车图标 - 3D效果 -->
+                <div style="position: absolute; top: 40%; left: 35%; z-index: 4; transform: translateZ(10px);" class="hearse-icon">
+                    <i class="fas fa-truck" style="color: #52c41a; font-size: 16px; animation: pulse 2s infinite; text-shadow: 0 0 10px rgba(82, 196, 26, 0.8);"></i>
+                </div>
+                <div style="position: absolute; top: 55%; left: 60%; z-index: 4; transform: translateZ(10px);" class="hearse-icon">
+                    <i class="fas fa-truck" style="color: #faad14; font-size: 16px; animation: pulse 2s infinite; text-shadow: 0 0 10px rgba(250, 173, 20, 0.8);"></i>
+                </div>
+                <div style="position: absolute; top: 30%; left: 65%; z-index: 4; transform: translateZ(10px);" class="hearse-icon">
+                    <i class="fas fa-truck" style="color: #faad14; font-size: 16px; animation: pulse 2s infinite; text-shadow: 0 0 10px rgba(250, 173, 20, 0.8);"></i>
+                </div>
+                <div style="position: absolute; top: 65%; left: 40%; z-index: 4; transform: translateZ(10px);" class="hearse-icon">
+                    <i class="fas fa-truck" style="color: #52c41a; font-size: 16px; animation: pulse 2s infinite; text-shadow: 0 0 10px rgba(82, 196, 26, 0.8);"></i>
+                </div>
+                <div style="position: absolute; top: 45%; left: 50%; z-index: 4; transform: translateZ(10px);" class="hearse-icon">
+                    <i class="fas fa-truck" style="color: #ff4d4f; font-size: 16px; animation: flash 1s infinite; text-shadow: 0 0 10px rgba(255, 77, 79, 0.8);"></i>
+                </div>
+                
+                <!-- 地图覆盖物 - 3D效果 -->
+                <div class="emergency-marker" style="top: 35%; left: 45%; z-index: 4; transform: translateZ(20px);">
+                    <div class="pulse-ring"></div>
+                    <div class="marker-icon" style="box-shadow: 0 0 10px rgba(255, 77, 79, 0.8);">2</div>
+                </div>
+                <div class="emergency-marker" style="top: 60%; left: 55%; z-index: 4; transform: translateZ(20px);">
+                    <div class="pulse-ring"></div>
+                    <div class="marker-icon" style="box-shadow: 0 0 10px rgba(255, 77, 79, 0.8);">1</div>
+                </div>
+                
+                <!-- 地图底部数据圆 - 3D效果 -->
+                <div class="map-overlay" style="z-index: 5;">
+                    <div class="data-circle" style="box-shadow: 0 5px 15px rgba(0, 204, 255, 0.5); transform: translateZ(10px);">
+                        <div class="data-value" id="totalReservationValue">3658</div>
+                        <div class="data-label">总预约数</div>
+                    </div>
+                    <div class="data-circle" style="box-shadow: 0 5px 15px rgba(0, 204, 255, 0.5); transform: translateZ(10px);">
+                        <div class="data-value" id="inProgressValue">168</div>
+                        <div class="data-label">服务中</div>
+                    </div>
+                    <div class="data-circle" style="box-shadow: 0 5px 15px rgba(0, 204, 255, 0.5); transform: translateZ(10px);">
+                        <div class="data-value" id="todayCompletedValue">36</div>
+                        <div class="data-label">今日完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右上受理概况面板 -->
+        <div class="panel" style="grid-column: 3; grid-row: 3;">
+            <div class="panel-header">
+                <div class="panel-title">投诉建议（个）</div>
+            </div>
+            <div class="chart-container">
+                <div id="userDemandChart" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+        
+        <!-- 右下已接递死亡记录面板 -->
+        <div class="panel" style="grid-column: 3; grid-row: 4;">
+            <div class="panel-header">
+                <div class="panel-title">死亡证明开具面板</div>
+            </div>
+            <div class="chart-container">
+                <div id="deathCertificateChart" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+        
+        <!-- 底部三个新面板 -->
+        <div class="panel" style="grid-column: 1; grid-row: 5; height: 150px;">
+            <div class="panel-header">
+                <div class="panel-title">资源使用情况</div>
+            </div>
+            <div style="padding: 10px; display: flex; flex-direction: column; height: calc(100% - 38px);">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <div style="width: 80px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">殡仪馆使用率</div>
+                    <div style="flex: 1; margin: 0 10px;">
+                        <div style="height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                            <div style="width: 76%; height: 100%; background: linear-gradient(90deg, #00ccff, #004080); border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                    <div style="width: 30px; font-size: 12px; font-weight: bold; color: #00ccff;">76%</div>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <div style="width: 80px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">火化设施利用</div>
+                    <div style="flex: 1; margin: 0 10px;">
+                        <div style="height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                            <div style="width: 84%; height: 100%; background: linear-gradient(90deg, #faad14, #804000); border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                    <div style="width: 30px; font-size: 12px; font-weight: bold; color: #faad14;">84%</div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 80px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">墓地容量</div>
+                    <div style="flex: 1; margin: 0 10px;">
+                        <div style="height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                            <div style="width: 65%; height: 100%; background: linear-gradient(90deg, #52c41a, #205010); border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                    <div style="width: 30px; font-size: 12px; font-weight: bold; color: #52c41a;">65%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="grid-column: 2; grid-row: 5; height: 150px;">
+            <div class="panel-header">
+                <div class="panel-title">满意度评价</div>
+            </div>
+            <div style="padding: 10px; display: flex; height: calc(100% - 38px);">
+                <div style="flex: 2; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 36px; font-weight: bold; color: #00ccff; line-height: 1;">96.8<span style="font-size: 20px;">%</span></div>
+                    <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 5px;">总体满意度</div>
+                </div>
+                <div style="flex: 3; display: flex; flex-direction: column; justify-content: center; padding-left: 15px; border-left: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <i class="fas fa-star" style="color: #ffeb3b; margin-right: 5px; font-size: 12px;"></i>
+                        <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8); flex: 1;">服务态度</span>
+                        <span style="font-size: 12px; font-weight: bold; color: #ffeb3b;">98%</span>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <i class="fas fa-clock" style="color: #00ccff; margin-right: 5px; font-size: 12px;"></i>
+                        <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8); flex: 1;">响应速度</span>
+                        <span style="font-size: 12px; font-weight: bold; color: #00ccff;">95%</span>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-hand-holding-usd" style="color: #52c41a; margin-right: 5px; font-size: 12px;"></i>
+                        <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8); flex: 1;">价格合理性</span>
+                        <span style="font-size: 12px; font-weight: bold; color: #52c41a;">93%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="grid-column: 3; grid-row: 5; height: 150px;">
+            <div class="panel-header">
+                <div class="panel-title">环保绿色殡葬推进</div>
+            </div>
+            <div style="padding: 8px; height: calc(100% - 38px);">
+                <!-- 环保指标圆环 -->
+                <div style="display: flex; justify-content: space-around; margin-bottom: 8px;">
+                    <!-- 生态葬比例 -->
+                    <div style="text-align: center;">
+                        <div style="position: relative; width: 55px; height: 55px; margin: 0 auto;">
+                            <svg viewBox="0 0 36 36" width="55" height="55">
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255, 255, 255, 0.1)" stroke-width="3" />
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#52c41a" stroke-width="3" stroke-dasharray="87, 100" />
+                            </svg>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <div style="font-size: 14px; font-weight: bold; color: #52c41a;">87%</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: #fff; margin-top: 3px;">生态葬比例</div>
+                    </div>
+                    
+                    <!-- 节能减排 -->
+                    <div style="text-align: center;">
+                        <div style="position: relative; width: 55px; height: 55px; margin: 0 auto;">
+                            <svg viewBox="0 0 36 36" width="55" height="55">
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255, 255, 255, 0.1)" stroke-width="3" />
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#00ccff" stroke-width="3" stroke-dasharray="63, 100" />
+                            </svg>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <div style="font-size: 14px; font-weight: bold; color: #00ccff;">63%</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: #fff; margin-top: 3px;">节能减排</div>
+                    </div>
+                    
+                    <!-- 土地节约 -->
+                    <div style="text-align: center;">
+                        <div style="position: relative; width: 55px; height: 55px; margin: 0 auto;">
+                            <svg viewBox="0 0 36 36" width="55" height="55">
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255, 255, 255, 0.1)" stroke-width="3" />
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#faad14" stroke-width="3" stroke-dasharray="72, 100" />
+                            </svg>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <div style="font-size: 14px; font-weight: bold; color: #faad14;">72%</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: #fff; margin-top: 3px;">土地节约</div>
+                    </div>
+                </div>
+                
+                <!-- 环保数据统计 -->
+                <div style="margin-top: 3px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 5px;">
+                    <!-- 年度环保覆盖率 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <div style="font-size: 11px; color: rgba(255, 255, 255, 0.8);">年度环保覆盖率</div>
+                        <div style="font-size: 12px; font-weight: bold; color: #52c41a;">76.3% <i class="fas fa-arrow-up" style="font-size: 9px;"></i></div>
+                    </div>
+                    
+                    <!-- 绿色殡葬推广率 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 11px; color: rgba(255, 255, 255, 0.8);">绿色殡葬推广率</div>
+                        <div style="font-size: 12px; font-weight: bold; color: #00ccff;">81.5% <i class="fas fa-arrow-up" style="font-size: 9px;"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化echarts图表
+            initCharts();
+            
+            // 添加数据动画计数器
+            animateCounters();
+            
+            // 模拟数据更新
+            setInterval(function() {
+                updateData();
+            }, 5000);
+        });
+
+        // 数据动画计数器
+        function animateCounters() {
+            const counters = document.querySelectorAll('.value');
+            const speed = 50; // 速度越小越快
+            
+            counters.forEach(counter => {
+                const targetValue = parseFloat(counter.getAttribute('data-target'));
+                const increment = targetValue / (1000 / speed);
+                let currentValue = 0;
+                
+                const updateCount = () => {
+                    if (currentValue < targetValue) {
+                        currentValue += increment;
+                        // 如果是整数，取整显示
+                        if (Number.isInteger(targetValue)) {
+                            counter.textContent = Math.ceil(currentValue).toLocaleString();
+                        } else {
+                            // 如果是小数，保留1位小数
+                            counter.textContent = currentValue.toFixed(1);
+                        }
+                        setTimeout(updateCount, speed);
+                    } else {
+                        counter.textContent = targetValue.toLocaleString();
+                    }
+                };
+                
+                updateCount();
+            });
+        }
+        
+        function initCharts() {
+            // 初始化所有图表
+            initServiceTypeChart();
+            initServiceProgressChart();
+            initMapChart();
+            initUserDemandChart();
+            initHearseChart();
+            initPolicyChart();
+            initDeathCertificateChart();
+            
+            // 添加星星粒子
+            createStarParticles();
+            
+            // 添加数据流动效果
+            setInterval(createDataFlow, 2000);
+            
+            // 随机更新数据
+            setInterval(updateRandomData, 5000);
+        }
+
+        // 服务类型统计图
+        function initServiceTypeChart() {
+            const chart = echarts.init(document.getElementById('serviceTypeChart'));
+            
+            // 简化饼图配置，避免布局问题
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'horizontal',
+                    bottom: '5%',
+                    left: 'center',
+                    itemWidth: 10,
+                    itemHeight: 10,
+                    itemGap: 8,
+                    formatter: function(name) {
+                        return name.length > 4 ? name.slice(0, 4) + '..' : name;
+                    },
+                    textStyle: { color: '#fff', fontSize: 10, padding: [0, 0, 0, 0] }
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['35%', '65%'],
+                    center: ['50%', '42%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderColor: '#0a2b4e',
+                        borderWidth: 1
+                    },
+                    label: {
+                        show: false
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 335, name: '遗体接运', itemStyle: { color: '#1e88e5' } },
+                        { value: 234, name: '守灵服务', itemStyle: { color: '#00ccff' } },
+                        { value: 310, name: '火化服务', itemStyle: { color: '#faad14' } },
+                        { value: 218, name: '骨灰安葬', itemStyle: { color: '#52c41a' } },
+                        { value: 135, name: '其他服务', itemStyle: { color: '#ff4d4f' } }
+                    ]
+                }]
+            };
+            
+            chart.setOption(option);
+            
+            // 确保图表响应窗口大小变化
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 服务进度图表
+        function initServiceProgressChart() {
+            const chart = echarts.init(document.getElementById('serviceProgressChart'));
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '5%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: [{
+                    type: 'category',
+                    data: ['遗体接运', '守灵', '火化', '骨灰寄存', '墓地安葬'],
+                    axisLine: { lineStyle: { color: '#1f5589' } },
+                    axisLabel: { color: '#fff', fontSize: 10 }
+                }],
+                yAxis: [{
+                    type: 'value',
+                    axisLine: { show: true, lineStyle: { color: '#1f5589' } },
+                    axisLabel: { color: '#fff' },
+                    splitLine: { lineStyle: { color: 'rgba(31, 85, 137, 0.3)' } }
+                }],
+                series: [
+                    {
+                        name: '平均时长(小时)',
+                        type: 'bar',
+                        barWidth: '40%',
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#00ccff' },
+                                { offset: 1, color: '#0a2b4e' }
+                            ])
+                        },
+                        data: [3.2, 6.5, 2.1, 4.5, 8.2]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 地图图表 - 增强3D效果
+        function initMapChart() {
+            const chart = echarts.init(document.getElementById('mapChart'));
+            
+            // 设置散点样式，增加3D效果
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br>服务量: {c}',
+                    backgroundColor: 'rgba(10, 43, 78, 0.8)',
+                    borderColor: '#00ccff',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                xAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 100,
+                    show: false
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 100,
+                    show: false
+                },
+                series: [
+                    {
+                        name: '泸州市服务点',
+                        type: 'effectScatter',
+                        coordinateSystem: 'cartesian2d', 
+                        data: [
+                            {name: '江阳区', value: [50, 50, 35]},
+                            {name: '龙马潭区', value: [40, 50, 28]},
+                            {name: '纳溪区', value: [60, 35, 24]},
+                            {name: '泸县', value: [70, 50, 18]},
+                            {name: '合江县', value: [30, 70, 15]},
+                            {name: '叙永县', value: [60, 70, 12]},
+                            {name: '古蔺县', value: [70, 65, 10]}
+                        ],
+                        symbolSize: function (val) {
+                            return val[2] * 0.8;
+                        },
+                        showEffectOn: 'render',
+                        rippleEffect: {
+                            brushType: 'stroke',
+                            scale: 4,
+                            period: 3
+                        },
+                        itemStyle: {
+                            color: function(params) {
+                                // 为不同区县设置不同颜色，增加饱和度
+                                const colors = ['#ffeb3b', '#00ccff', '#ff4d4f', '#52c41a', '#9c27b0', '#ff9800', '#03a9f4'];
+                                return colors[params.dataIndex % colors.length];
+                            },
+                            shadowBlur: 15,
+                            shadowColor: '#333'
+                        },
+                        emphasis: {
+                            scale: true,
+                            itemStyle: {
+                                borderColor: '#fff',
+                                borderWidth: 2,
+                                shadowBlur: 20,
+                                shadowColor: 'rgba(0, 204, 255, 0.8)'
+                            }
+                        },
+                        zlevel: 1
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 添加3D视角摇摆效果
+            let angle = 0;
+            setInterval(() => {
+                const mapContainer = document.querySelector('.map-inner > div:first-child svg');
+                if (mapContainer) {
+                    angle += 0.1;
+                    const rotateX = 20 + Math.sin(angle) * 3;
+                    const rotateY = Math.sin(angle/2) * 2;
+                    mapContainer.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                }
+            }, 100);
+            
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 用户需求分布图表
+        function initUserDemandChart() {
+            const chart = echarts.init(document.getElementById('userDemandChart'));
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center',
+                    data: ['殡仪服务', '火化', '骨灰寄存', '墓地服务'],
+                    textStyle: { color: '#fff' }
+                },
+                series: [{
+                    name: '用户需求',
+                    type: 'pie',
+                    radius: ['30%', '70%'],
+                    center: ['40%', '50%'],
+                    roseType: 'radius',
+                    itemStyle: {
+                        borderRadius: 5,
+                        borderColor: '#0a2b4e',
+                        borderWidth: 2
+                    },
+                    label: {
+                        color: '#fff'
+                    },
+                    labelLine: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.3)'
+                        },
+                        smooth: 0.2,
+                        length: 10,
+                        length2: 20
+                    },
+                    data: [
+                        { value: 235, name: '殡仪服务', itemStyle: { color: '#1e88e5' } },
+                        { value: 274, name: '火化', itemStyle: { color: '#00ccff' } },
+                        { value: 310, name: '骨灰寄存', itemStyle: { color: '#faad14' } },
+                        { value: 335, name: '墓地服务', itemStyle: { color: '#52c41a' } }
+                    ]
+                }]
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 灵车调度图表
+        function initHearseChart() {
+            const chart = echarts.init(document.getElementById('hearseChart'));
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    top: '15%',
+                    left: '3%',
+                    right: '5%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                legend: {
+                    data: ['在线灵车', '任务中', '告警车辆'],
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 10
+                    },
+                    right: 10,
+                    top: 0,
+                    itemWidth: 10,
+                    itemHeight: 10,
+                    itemGap: 5
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['江阳区', '龙马潭', '纳溪区', '泸县', '合江县', '叙永县', '古蔺县'],
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.3)'
+                        }
+                    },
+                    axisLabel: {
+                        fontSize: 10,
+                        color: '#fff',
+                        interval: 0,
+                        rotate: 0
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    max: 5,
+                    splitNumber: 2,
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        fontSize: 10,
+                        color: '#fff'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '在线灵车',
+                        type: 'bar',
+                        stack: 'total',
+                        barWidth: '40%',
+                        itemStyle: {
+                            color: '#52c41a'
+                        },
+                        data: [3, 2, 2, 1, 2, 1, 1]
+                    },
+                    {
+                        name: '任务中',
+                        type: 'bar',
+                        stack: 'total',
+                        barWidth: '40%',
+                        itemStyle: {
+                            color: '#faad14'
+                        },
+                        data: [2, 1, 1, 0, 1, 0, 0]
+                    },
+                    {
+                        name: '告警车辆',
+                        type: 'bar',
+                        stack: 'total',
+                        barWidth: '40%',
+                        itemStyle: {
+                            color: '#ff4d4f'
+                        },
+                        data: [0, 0, 0, 0, 0, 1, 0]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 政策执行情况图表
+        function initPolicyChart() {
+            // 确保政策执行情况面板中的进度条有动画效果
+            const policyBars = document.querySelectorAll('.policy-progress-bar');
+            
+            policyBars.forEach(bar => {
+                const percent = bar.getAttribute('data-percent');
+                setTimeout(() => {
+                    bar.style.width = percent + '%';
+                }, 300);
+            });
+        }
+
+        // 创建星星粒子
+        function createStarParticles() {
+            const container = document.body;
+            const starCount = 50;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star-particle';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // 创建数据流动效果
+        function createDataFlow() {
+            const container = document.querySelector('.dashboard-container');
+            const flow = document.createElement('div');
+            flow.className = 'data-flow';
+            
+            // 随机起点 (倾向于左侧或右侧边缘)
+            const startSide = Math.random() > 0.5 ? 'left' : 'right';
+            let startX, startY;
+            
+            if (startSide === 'left') {
+                startX = Math.random() * 0.2 * container.offsetWidth;
+            } else {
+                startX = container.offsetWidth - (Math.random() * 0.2 * container.offsetWidth);
+            }
+            
+            startY = Math.random() * container.offsetHeight;
+            
+            // 随机终点 (通常是地图或中央区域)
+            const endX = container.offsetWidth * 0.3 + Math.random() * container.offsetWidth * 0.4;
+            const endY = container.offsetHeight * 0.3 + Math.random() * container.offsetHeight * 0.4;
+            
+            // 设置位置和动画
+            flow.style.left = startX + 'px';
+            flow.style.top = startY + 'px';
+            flow.style.setProperty('--end-x', (endX - startX) + 'px');
+            flow.style.setProperty('--end-y', (endY - startY) + 'px');
+            
+            container.appendChild(flow);
+            
+            // 动画结束后移除元素
+            setTimeout(() => {
+                container.removeChild(flow);
+            }, 2000);
+        }
+
+        // 随机更新数据
+        function updateRandomData() {
+            // 更新统计数字
+            const onlineApplicationValue = document.getElementById('onlineApplicationValue');
+            const currentValue = parseInt(onlineApplicationValue.textContent);
+            const change = Math.floor(Math.random() * 10) - 2; // -2 到 7 的随机数
+            onlineApplicationValue.textContent = currentValue + change;
+            
+            // 更新预约完成率
+            const completionRateValue = document.getElementById('completionRateValue');
+            const currentRate = parseInt(completionRateValue.textContent);
+            const changeRate = Math.floor(Math.random() * 3) - 1; // -1 到 1 的随机数
+            completionRateValue.textContent = (currentRate + changeRate) + "%";
+            
+            // 更新地图数据
+            const mapOverlayValues = [
+                document.getElementById('totalReservationValue'),
+                document.getElementById('inProgressValue'),
+                document.getElementById('todayCompletedValue')
+            ];
+            
+            mapOverlayValues.forEach(el => {
+                const val = parseInt(el.textContent);
+                const changeVal = Math.floor(Math.random() * 5) - 1; // -1 到 3 的随机数
+                el.textContent = val + changeVal;
+            });
+            
+            // 随机在页面上添加信息动效
+            addRandomInfoAnimation();
+        }
+
+        // 随机添加信息动效
+        function addRandomInfoAnimation() {
+            const container = document.querySelector('.dashboard-container');
+            const types = ['数据上传', '服务完成', '新预约', '任务分派'];
+            const icons = ['fas fa-upload', 'fas fa-check-circle', 'fas fa-calendar-plus', 'fas fa-tasks'];
+            
+            const randomIndex = Math.floor(Math.random() * types.length);
+            const infoItem = document.createElement('div');
+            infoItem.className = 'random-anim-item';
+            
+            // 随机位置，偏向左右两侧底部
+            const side = Math.random() > 0.5 ? 'left' : 'right';
+            const posX = side === 'left' ? 
+                         (Math.random() * 0.3 * container.offsetWidth) : 
+                         (container.offsetWidth - (Math.random() * 0.3 * container.offsetWidth));
+            const posY = container.offsetHeight * 0.7 + Math.random() * container.offsetHeight * 0.2;
+            
+            infoItem.style.left = posX + 'px';
+            infoItem.style.top = posY + 'px';
+            infoItem.innerHTML = `
+                <div style="background: rgba(0,204,255,0.2); padding: 5px 10px; border-radius: 4px; border: 1px solid var(--highlight-color);">
+                    <i class="${icons[randomIndex]}" style="margin-right: 5px;"></i>
+                    ${types[randomIndex]}: ${Math.floor(Math.random() * 100)}
+                </div>
+            `;
+            
+            container.appendChild(infoItem);
+            
+            // 动画结束后移除元素
+            setTimeout(() => {
+                container.removeChild(infoItem);
+            }, 3000);
+        }
+
+        // 死亡证明开具图表
+        function initDeathCertificateChart() {
+            const chart = echarts.init(document.getElementById('deathCertificateChart'));
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    top: 'middle',
+                    itemWidth: 10,
+                    itemHeight: 10,
+                    textStyle: { color: '#fff', fontSize: 11 },
+                    data: ['已开具总量', '公安开具总量', '卫健开具总量', '未开具总量']
+                },
+                series: [{
+                    name: '死亡证明',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['65%', '50%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderColor: '#0a2b4e',
+                        borderWidth: 2,
+                        borderRadius: 4
+                    },
+                    label: {
+                        show: false
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontWeight: 'bold',
+                            formatter: '{b}\n{c} ({d}%)'
+                        }
+                    },
+                    data: [
+                        { value: 485, name: '已开具总量', itemStyle: { color: '#52c41a' } },
+                        { value: 210, name: '公安开具总量', itemStyle: { color: '#1e88e5' } },
+                        { value: 275, name: '卫健开具总量', itemStyle: { color: '#00ccff' } },
+                        { value: 120, name: '未开具总量', itemStyle: { color: '#ff4d4f' } }
+                    ]
+                }]
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+    </script>
+</body>
+</html> 

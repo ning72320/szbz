@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>订单跟踪 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color: #00796B;
+            --primary-color-light: #E0F2F1;
+            --completed-color: #4CAF50;
+            --pending-color: #9E9E9E;
+            --current-color: #03A9F4;
+            --background-color: #f5f5f5;
+            --content-max-width: 720px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+        }
+        
+        html, body {
+            height: 100%;
+            background-color: var(--background-color);
+        }
+        
+        .wxapp-container {
+            margin: 0 auto;
+            max-width: var(--content-max-width);
+            height: 100%;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content {
+            flex: 1;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .header {
+            position: relative;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 60px 20px 20px;
+            border-radius: 0 0 16px 16px;
+            background-image: url('../images/order-track-banner.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 121, 107, 0.85);
+            border-radius: 0 0 16px 16px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            color: white;
+            z-index: 5;
+            font-size: 18px;
+        }
+        
+        .header-title {
+            position: relative;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            z-index: 1;
+        }
+        
+        .header-subtitle {
+            position: relative;
+            font-size: 14px;
+            opacity: 0.9;
+            z-index: 1;
+        }
+        
+        .order-search {
+            margin: -20px 16px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+            border-radius: 50px;
+            padding: 0 15px;
+            height: 45px;
+        }
+        
+        .search-icon {
+            color: #999;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            height: 100%;
+            font-size: 14px;
+        }
+        
+        .order-cards {
+            padding: 0 16px;
+        }
+        
+        .order-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+        
+        .order-id {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .order-date {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .order-info {
+            padding: 15px;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+        
+        .order-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .order-detail {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        
+        .detail-label {
+            width: 80px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .detail-value {
+            flex: 1;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .progress-timeline {
+            padding: 15px;
+        }
+        
+        .timeline-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            border: 1px solid #ddd;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+        
+        .timeline-dot.completed {
+            background-color: var(--completed-color);
+            border-color: var(--completed-color);
+            color: white;
+        }
+        
+        .timeline-dot.current {
+            background-color: var(--current-color);
+            border-color: var(--current-color);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(3, 169, 244, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(3, 169, 244, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(3, 169, 244, 0);
+            }
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-label {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: normal;
+        }
+        
+        .timeline-status.completed {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--completed-color);
+        }
+
+        .timeline-status.pending {
+            background-color: rgba(158, 158, 158, 0.1);
+            color: var(--pending-color);
+        }
+
+        .timeline-status.current {
+            background-color: rgba(3, 169, 244, 0.1);
+            color: var(--primary-color);
+        }
+
+        .timeline-time {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-desc {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .timeline-desc p {
+            margin: 0;
+        }
+
+        .timeline-action {
+            margin-top: 10px;
+        }
+
+        .action-button {
+            display: inline-block;
+            background-color: var(--primary-color-light);
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .order-price {
+            color: #FF5722;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .order-buttons {
+            display: flex;
+        }
+
+        .footer-button {
+            padding: 6px 12px;
+            margin-left: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            border: 1px solid var(--primary-color);
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        .footer-button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .order-empty {
+            text-align: center;
+            padding: 40px 0;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .empty-text {
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .empty-button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            border: none;
+        }
+
+        .dynamic-island {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 20px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 99;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon,
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <!-- Dynamic Island模拟 -->
+        <div class="dynamic-island"></div>
+        
+        <div class="content">
+            <div class="header">
+                <a href="index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-title">订单跟踪</div>
+                <div class="header-subtitle">实时查看服务进度与流程</div>
+            </div>
+            
+            <div class="order-search">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="请输入订单号或服务名称">
+                </div>
+            </div>
+            
+            <div class="order-cards">
+                <!-- 进行中的订单 -->
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">订单号：SL2023051200125</div>
+                        <div class="order-date">2023-05-12</div>
+                    </div>
+                    
+                    <div class="order-info">
+                        <div class="order-title">王老先生治丧服务</div>
+                        <div class="order-detail">
+                            <div class="detail-label">逝者姓名</div>
+                            <div class="detail-value">王中山</div>
+                        </div>
+                        <div class="order-detail">
+                            <div class="detail-label">服务类型</div>
+                            <div class="detail-value">基础丧葬套餐</div>
+                        </div>
+                        <div class="order-detail">
+                            <div class="detail-label">服务机构</div>
+                            <div class="detail-value">泸州市殡仪馆</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-timeline">
+                        <div class="timeline-title">服务进度</div>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot completed">
+                                    <i class="fas fa-check" style="font-size: 10px;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        接运服务
+                                        <span class="timeline-status completed">已完成</span>
+                                    </div>
+                                    <div class="timeline-time">2023-05-12 09:30</div>
+                                    <div class="timeline-desc">
+                                        <p>专业接运人员已将逝者安全接运至殡仪馆</p>
+                                        <p>接运车辆：粤A·12345</p>
+                                        <p>接运人员：李师傅 (联系电话: 138****5678)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot completed">
+                                    <i class="fas fa-check" style="font-size: 10px;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        逝者入馆
+                                        <span class="timeline-status completed">已完成</span>
+                                    </div>
+                                    <div class="timeline-time">2023-05-12 10:15</div>
+                                    <div class="timeline-desc">
+                                        <p>逝者已安置于殡仪馆冷藏间</p>
+                                        <p>冷藏编号：A12-3</p>
+                                        <p>经办人员：王工作人员</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot current">
+                                    <i class="fas fa-sync-alt" style="font-size: 10px;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        守灵服务
+                                        <span class="timeline-status current">进行中</span>
+                                    </div>
+                                    <div class="timeline-time">2023-05-12 14:00 - 2023-05-13 14:00</div>
+                                    <div class="timeline-desc">
+                                        <p>守灵厅：2号厅</p>
+                                        <p>服务人员：张经理 (联系电话: 139****1234)</p>
+                                        <p>预计结束时间：2023-05-13 14:00</p>
+                                    </div>
+                                    <div class="timeline-action">
+                                        <button class="action-button">联系工作人员</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="fas fa-circle" style="font-size: 8px; color: #ddd;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        告别仪式
+                                        <span class="timeline-status pending">待开始</span>
+                                    </div>
+                                    <div class="timeline-time">2023-05-13 15:00 (预计)</div>
+                                    <div class="timeline-desc">
+                                        <p>告别厅：3号厅</p>
+                                        <p>仪式时长：约45分钟</p>
+                                        <p>司仪：陈司仪</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="fas fa-circle" style="font-size: 8px; color: #ddd;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        火化服务
+                                        <span class="timeline-status pending">待开始</span>
+                                    </div>
+                                    <div class="timeline-time">2023-05-13 16:00 (预计)</div>
+                                    <div class="timeline-desc">
+                                        <p>火化炉号：5号</p>
+                                        <p>火化时长：约40分钟</p>
+                                        <p>负责人员：赵师傅</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="fas fa-circle" style="font-size: 8px; color: #ddd;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        骨灰处理
+                                        <span class="timeline-status pending">待开始</span>
+                                    </div>
+                                    <div class="timeline-time">2023-05-13 17:00 (预计)</div>
+                                    <div class="timeline-desc">
+                                        <p>骨灰盒型号：松鹤长青</p>
+                                        <p>处理方式：装盒封存</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="fas fa-circle" style="font-size: 8px; color: #ddd;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        服务完成
+                                        <span class="timeline-status pending">待完成</span>
+                                    </div>
+                                    <div class="timeline-time">2023-05-13 18:00 (预计)</div>
+                                    <div class="timeline-desc">
+                                        <p>服务完成后，工作人员将与您联系，办理相关手续并交付骨灰盒</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-footer">
+                        <div class="order-price">¥2,800</div>
+                        <div class="order-buttons">
+                            <button class="footer-button">查看详情</button>
+                            <button class="footer-button primary">联系客服</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 已完成的订单 -->
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">订单号：SL2023042500098</div>
+                        <div class="order-date">2023-04-25</div>
+                    </div>
+                    
+                    <div class="order-info">
+                        <div class="order-title">李女士治丧服务</div>
+                        <div class="order-detail">
+                            <div class="detail-label">逝者姓名</div>
+                            <div class="detail-value">李玉兰</div>
+                        </div>
+                        <div class="order-detail">
+                            <div class="detail-label">服务类型</div>
+                            <div class="detail-value">尊享丧葬套餐</div>
+                        </div>
+                        <div class="order-detail">
+                            <div class="detail-label">服务机构</div>
+                            <div class="detail-value">泸州市殡仪馆</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-timeline">
+                        <div class="timeline-title">服务进度</div>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot completed">
+                                    <i class="fas fa-check" style="font-size: 10px;"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-label">
+                                        服务已完成
+                                        <span class="timeline-status completed">已完成</span>
+                                    </div>
+                                    <div class="timeline-time">2023-04-26 18:30</div>
+                                    <div class="timeline-desc">
+                                        <p>全部服务项目已完成，感谢您的信任</p>
+                                        <p>如需后续服务，请联系客服</p>
+                                    </div>
+                                    <div class="timeline-action">
+                                        <button class="action-button">查看服务评价</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-footer">
+                        <div class="order-price">¥5,800</div>
+                        <div class="order-buttons">
+                            <button class="footer-button">查看详情</button>
+                            <button class="footer-button">再次预约</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="tab-bar">
+            <div class="tab-item" data-page="index.html">
+                <i class="tab-icon fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-page="funeral-manager.html">
+                <i class="tab-icon fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item active" data-page="profile.html">
+                <i class="tab-icon fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面链接
+            initPageLinks();
+            
+            // 初始化底部导航
+            initTabBar();
+            
+            // 搜索功能
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('focus', function() {
+                this.placeholder = '';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.placeholder = '请输入订单号或服务名称';
+            });
+            
+            // 联系按钮点击事件
+            const actionButtons = document.querySelectorAll('.action-button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('即将连接客服，请稍候...');
+                });
+            });
+            
+            // 底部按钮点击事件
+            const footerButtons = document.querySelectorAll('.footer-button');
+            footerButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (this.textContent === '联系客服') {
+                        alert('即将连接客服，请稍候...');
+                    } else if (this.textContent === '查看详情') {
+                        alert('正在加载订单详情...');
+                    } else if (this.textContent === '再次预约') {
+                        alert('即将跳转到预约页面...');
+                    } else if (this.textContent === '查看服务评价') {
+                        alert('正在加载服务评价...');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

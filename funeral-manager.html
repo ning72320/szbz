@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>白事管家 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color: #5d78a8;
+            --primary-light: rgba(93, 120, 168, 0.1);
+            --primary-dark: #4a5f8a;
+            --accent-color: #4a7a9b;
+            --red-color: #e74c3c;
+            --blue-color: #3498db;
+            --green-color: #2ecc71;
+            --yellow-color: #f39c12;
+            --text-color: #333;
+            --text-color-light: #777;
+            --border-color: #e0e0e0;
+            --bg-color: #f8f8f8;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #5d78a8, #4a7a9b);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            background-color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        /* 头部样式 */
+        .status-bar {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            background-color: white;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .back {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        .title {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .right-action {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        /* 头部简介区域 */
+        .manager-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 20px 15px;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .manager-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .manager-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        /* 流程卡片样式 */
+        .process-cards {
+            padding: 0 15px;
+            margin-top: -15px;
+        }
+        
+        .process-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .process-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .process-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        
+        .process-name {
+            font-size: 16px;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .process-status {
+            font-size: 13px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .process-meta {
+            margin-bottom: 15px;
+        }
+        
+        .process-time {
+            font-size: 13px;
+            color: var(--text-color-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .process-time i {
+            margin-right: 5px;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background-color: #eee;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        .process-progress span {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        
+        .process-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .process-action-btn {
+            flex: 1;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 0;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .process-action-btn i {
+            margin-right: 5px;
+        }
+        
+        /* 快捷功能区域 */
+        .quick-function-area {
+            background-color: white;
+            border-radius: 10px;
+            margin: 15px;
+            padding: 15px 0;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .quick-function-row {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .quick-function-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 25%;
+        }
+        
+        .function-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .function-name {
+            font-size: 13px;
+            color: var(--text-color);
+            text-align: center;
+        }
+        
+        /* 区块标题样式 */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            margin: 20px 0 10px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .section-more {
+            font-size: 13px;
+            color: var(--text-color-light);
+        }
+        
+        /* 待办事项列表 */
+        .todo-list {
+            padding: 0 15px;
+        }
+        
+        .todo-item {
+            display: flex;
+            align-items: flex-start;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .todo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .todo-content {
+            flex: 1;
+        }
+        
+        .todo-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .todo-desc {
+            font-size: 13px;
+            color: var(--text-color-light);
+            margin-bottom: 8px;
+        }
+        
+        .todo-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .todo-time {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        
+        .todo-tag {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .gov-tag {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--red-color);
+        }
+        
+        .market-tag {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--blue-color);
+        }
+        
+        .todo-action {
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .todo-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .gov-item .todo-icon {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--red-color);
+        }
+        
+        .market-item .todo-icon {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--blue-color);
+        }
+        
+        /* 空状态样式 */
+        .empty-process {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 30px 20px;
+            margin: 20px 15px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 50px;
+            color: var(--primary-color);
+            opacity: 0.3;
+            margin-bottom: 15px;
+        }
+        
+        .empty-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        
+        .empty-desc {
+            font-size: 14px;
+            color: var(--text-color-light);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .create-process-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .create-process-btn i {
+            margin-right: 5px;
+        }
+        
+        /* 功能简介卡片 */
+        .feature-cards {
+            padding: 0 15px;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .feature-content {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .feature-desc {
+            font-size: 13px;
+            color: var(--text-color-light);
+            line-height: 1.4;
+        }
+        
+        /* 工具栏网格 */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 0 15px 20px;
+        }
+        
+        .tool-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .tool-name {
+            font-size: 13px;
+            color: var(--text-color);
+        }
+        
+        /* 底部导航栏 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 430px;
+            margin: 0 auto;
+            z-index: 1000;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+        
+        /* 媒体查询 */
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">白事管家</div>
+            <div class="right-action">
+                <i class="fas fa-cog"></i>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="manager-header">
+                <div class="manager-title">白事一站式智能管理</div>
+                <div class="manager-subtitle">提供殡葬服务全流程智能规划与管理，减轻您的压力</div>
+            </div>
+            
+            <div id="active-process">
+                <div class="process-cards">
+                    <div class="process-card">
+                        <div class="process-title">
+                            <div class="process-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="process-name">张老先生治丧事宜</div>
+                            <div class="process-status active">进行中</div>
+                        </div>
+                        <div class="process-meta">
+                            <div class="process-time">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>开始时间: 2023-06-25</span>
+                            </div>
+                            <div class="process-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 35%;"></div>
+                                </div>
+                                <span>6/17 已完成</span>
+                            </div>
+                        </div>
+                        <div class="process-actions">
+                            <button class="process-action-btn">
+                                <i class="fas fa-eye"></i>
+                                查看详情
+                            </button>
+                            <button class="process-action-btn">
+                                <i class="fas fa-tasks"></i>
+                                任务管理
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quick-function-area">
+                    <div class="quick-function-row">
+                        <div class="quick-function-item" id="process-decomposition">
+                            <div class="function-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="function-name">流程拆解</div>
+                        </div>
+                        <div class="quick-function-item" id="custom-checklist">
+                            <div class="function-icon">
+                                <i class="fas fa-list-alt"></i>
+                            </div>
+                            <div class="function-name">个性化清单</div>
+                        </div>
+                        <div class="quick-function-item" id="task-management">
+                            <div class="function-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="function-name">进度管理</div>
+                        </div>
+                        <div class="quick-function-item" id="resource-network">
+                            <div class="function-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="function-name">可信资源</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <div class="section-title">今日待办事项</div>
+                    <div class="section-more">查看全部</div>
+                </div>
+                
+                <div class="todo-list">
+                    <div class="todo-item gov-item">
+                        <div class="todo-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="todo-content">
+                            <div class="todo-title">火化许可证申请</div>
+                            <div class="todo-desc">需在死亡后24小时内提交申请</div>
+                            <div class="todo-meta">
+                                <span class="todo-time">剩余: 18小时</span>
+                                <span class="todo-tag gov-tag">政府必办</span>
+                            </div>
+                        </div>
+                        <div class="todo-action">
+                            <button class="todo-btn">办理</button>
+                        </div>
+                    </div>
+                    
+                    <div class="todo-item market-item">
+                        <div class="todo-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="todo-content">
+                            <div class="todo-title">遗体接运预约</div>
+                            <div class="todo-desc">预约专业接运车辆及人员</div>
+                            <div class="todo-meta">
+                                <span class="todo-time">建议今日完成</span>
+                                <span class="todo-tag market-tag">市场可选</span>
+                            </div>
+                        </div>
+                        <div class="todo-action">
+                            <button class="todo-btn">预约</button>
+                        </div>
+                    </div>
+                    
+                    <div class="todo-item gov-item">
+                        <div class="todo-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="todo-content">
+                            <div class="todo-title">死亡证明办理</div>
+                            <div class="todo-desc">前往医院或公安部门办理死亡证明</div>
+                            <div class="todo-meta">
+                                <span class="todo-time">建议今日完成</span>
+                                <span class="todo-tag gov-tag">政府必办</span>
+                            </div>
+                        </div>
+                        <div class="todo-action">
+                            <button class="todo-btn">办理</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="empty-process" style="display: none;">
+                <div class="empty-process">
+                    <div class="empty-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="empty-title">您还没有进行中的白事流程</div>
+                    <div class="empty-desc">
+                        创建白事管理流程，获取智能规划和全程指导<br>
+                        帮您减轻白事筹备压力，妥善处理各项事宜
+                    </div>
+                    <button class="create-process-btn" id="create-process">
+                        <i class="fas fa-plus"></i>开始创建白事流程
+                    </button>
+                </div>
+                
+                <div class="feature-cards">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="feature-content">
+                            <div class="feature-title">流程智能拆解</div>
+                            <div class="feature-desc">将殡葬服务分解为17个标准化节点，清晰可见</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-list-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <div class="feature-title">个性化清单生成</div>
+                            <div class="feature-desc">根据您的需求自动生成定制化流程与材料清单</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="feature-content">
+                            <div class="feature-title">自动化进度管理</div>
+                            <div class="feature-desc">待办事项智能推送，自动同步政府办理时限</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="feature-content">
+                            <div class="feature-title">可信资源网络</div>
+                            <div class="feature-desc">经民政认证的服务机构，资质公示与价格透明</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-header">
+                <div class="section-title">常用工具</div>
+            </div>
+            
+            <div class="tools-grid">
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(52, 152, 219, 0.1); color: #3498db;">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <div class="tool-name">殡葬机构</div>
+                </div>
+                
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(46, 204, 113, 0.1); color: #2ecc71;">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="tool-name">费用计算</div>
+                </div>
+                
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="tool-name">礼仪指南</div>
+                </div>
+                
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(243, 156, 18, 0.1); color: #f39c12;">
+                        <i class="fas fa-file-download"></i>
+                    </div>
+                    <div class="tool-name">材料下载</div>
+                </div>
+                
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(231, 76, 60, 0.1); color: #e74c3c;">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="tool-name">紧急咨询</div>
+                </div>
+                
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(52, 73, 94, 0.1); color: #34495e;">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="tool-name">常见问答</div>
+                </div>
+                
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(22, 160, 133, 0.1); color: #16a085;">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="tool-name">墓地查询</div>
+                </div>
+                
+                <div class="tool-item">
+                    <div class="tool-icon" style="background-color: rgba(41, 128, 185, 0.1); color: #2980b9;">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="tool-name">在线咨询</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-bar">
+            <div class="tab-item" data-page="home.html">
+                <i class="tab-icon fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item active">
+                <i class="tab-icon fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item" data-page="profile.html">
+                <i class="tab-icon fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面元素和事件
+            initPage();
+            
+            // 底部导航栏点击事件
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    if (page) {
+                        window.location.href = page;
+                    }
+                });
+            });
+            
+            // 返回按钮事件
+            document.querySelector('.back').addEventListener('click', function() {
+                window.location.href = 'home.html';
+            });
+            
+            // 设置按钮事件
+            document.querySelector('.right-action').addEventListener('click', function() {
+                alert('设置功能即将上线');
+            });
+            
+            // 白事流程卡片操作按钮
+            document.querySelectorAll('.process-action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    if (action.includes('查看详情')) {
+                        showProcessDetail();
+                    } else if (action.includes('任务管理')) {
+                        showTaskManagement();
+                    }
+                });
+            });
+            
+            // 快捷功能点击事件
+            document.getElementById('process-decomposition').addEventListener('click', showProcessDecomposition);
+            document.getElementById('custom-checklist').addEventListener('click', showCustomChecklist);
+            document.getElementById('task-management').addEventListener('click', showTaskManagement);
+            document.getElementById('resource-network').addEventListener('click', showResourceNetwork);
+            
+            // 待办事项点击
+            document.querySelectorAll('.todo-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const todoItem = this.closest('.todo-item');
+                    const taskName = todoItem.querySelector('.todo-title').textContent;
+                    
+                    if (todoItem.classList.contains('gov-item')) {
+                        showGovTask(taskName);
+                    } else {
+                        showMarketTask(taskName);
+                    }
+                });
+            });
+            
+            // 创建流程按钮
+            document.getElementById('create-process').addEventListener('click', startProcessCreation);
+            
+            // 工具项点击
+            document.querySelectorAll('.tool-item').forEach(tool => {
+                tool.addEventListener('click', function() {
+                    const toolName = this.querySelector('.tool-name').textContent;
+                    showTool(toolName);
+                });
+            });
+        });
+        
+        // 初始化页面
+        function initPage() {
+            // 根据是否有进行中的流程决定显示哪个视图
+            const hasActiveProcess = true; // 这里可以根据实际情况切换
+            
+            if (hasActiveProcess) {
+                document.getElementById('active-process').style.display = 'block';
+                document.getElementById('empty-process').style.display = 'none';
+            } else {
+                document.getElementById('active-process').style.display = 'none';
+                document.getElementById('empty-process').style.display = 'block';
+            }
+        }
+        
+        // 显示流程详情
+        function showProcessDetail() {
+            alert('正在加载流程详细信息...');
+            // 这里可以跳转到流程详情页面
+            // window.location.href = 'process-detail.html';
+        }
+        
+        // 显示任务管理
+        function showTaskManagement() {
+            alert('正在加载任务管理界面...');
+            // 这里可以跳转到任务管理页面
+            // window.location.href = 'task-management.html';
+        }
+        
+        // 显示流程智能拆解
+        function showProcessDecomposition() {
+            // 显示流程智能拆解弹窗或页面
+            const processNodes = [
+                {name: "死亡证明申报", type: "gov", deadline: "24小时内"},
+                {name: "遗体接运预约", type: "market", deadline: "尽快"},
+                {name: "火化许可申请", type: "gov", deadline: "24小时内"},
+                {name: "告别仪式安排", type: "market", deadline: "3天内"},
+                {name: "墓地手续办理", type: "gov", deadline: "7天内"},
+                {name: "骨灰寄存/安葬", type: "market", deadline: "视情况而定"},
+                {name: "户口注销", type: "gov", deadline: "30天内"},
+                {name: "丧葬补贴申请", type: "gov", deadline: "3个月内"},
+                {name: "遗产继承手续", type: "market", deadline: "无固定期限"},
+                /* 后续节点... */
+            ];
+            
+            let processHtml = "<h3>殡葬服务17个标准化节点</h3><ul class='process-nodes'>";
+            
+            processNodes.forEach(node => {
+                const nodeClass = node.type === 'gov' ? 'gov-node' : 'market-node';
+                const nodeIcon = node.type === 'gov' ? 'certificate' : 'store';
+                
+                processHtml += `
+                    <li class="process-node ${nodeClass}">
+                        <i class="fas fa-${nodeIcon}"></i>
+                        <div class="node-content">
+                            <div class="node-name">${node.name}</div>
+                            <div class="node-deadline">期限: ${node.deadline}</div>
+                        </div>
+                    </li>
+                `;
+            });
+            
+            processHtml += "</ul>";
+            
+            // 显示弹窗
+            showCustomDialog("流程智能拆解", processHtml, "关闭");
+        }
+        
+        // 显示个性化清单生成
+        function showCustomChecklist() {
+            // 显示问卷调查弹窗
+            const surveyHtml = `
+                <div class="survey-container">
+                    <div class="survey-progress">
+                        <div class="progress-step active">1</div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step">2</div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step">3</div>
+                    </div>
+                    
+                    <div class="survey-title">您有哪些宗教需求？</div>
+                    
+                    <div class="survey-options">
+                        <label class="survey-option">
+                            <input type="radio" name="religion" value="none">
+                            <span class="option-text">无特殊宗教需求</span>
+                        </label>
+                        
+                        <label class="survey-option">
+                            <input type="radio" name="religion" value="buddhist">
+                            <span class="option-text">佛教仪式</span>
+                        </label>
+                        
+                        <label class="survey-option">
+                            <input type="radio" name="religion" value="taoist">
+                            <span class="option-text">道教仪式</span>
+                        </label>
+                        
+                        <label class="survey-option">
+                            <input type="radio" name="religion" value="christian">
+                            <span class="option-text">基督教仪式</span>
+                        </label>
+                        
+                        <label class="survey-option">
+                            <input type="radio" name="religion" value="other">
+                            <span class="option-text">其他宗教仪式</span>
+                        </label>
+                    </div>
+                    
+                    <div class="survey-buttons">
+                        <button class="survey-btn next-btn">下一步</button>
+                    </div>
+                </div>
+            `;
+            
+            showCustomDialog("个性化清单生成", surveyHtml, null);
+            
+            // 添加问卷交互逻辑
+            setTimeout(() => {
+                document.querySelector('.next-btn').addEventListener('click', () => {
+                    // 这里可以继续下一步问卷，或者跳转到问卷详情页面
+                    alert('将进入下一步问卷调查: 预算范围');
+                    window.location.href = 'survey.html';
+                });
+            }, 100);
+        }
+        
+        // 显示资源网络
+        function showResourceNetwork() {
+            alert('正在加载可信资源网络...');
+            // 这里可以跳转到资源网络页面
+            // window.location.href = 'resource-network.html';
+        }
+        
+        // 显示政府必办任务
+        function showGovTask(taskName) {
+            // 对应任务的材料清单和办理指南
+            const materialsHtml = `
+                <div class="materials-list">
+                    <div class="material-item">
+                        <div class="material-icon"><i class="fas fa-id-card"></i></div>
+                        <div class="material-content">
+                            <div class="material-name">逝者身份证原件及复印件</div>
+                            <a href="javascript:void(0)" class="material-action">下载复印件模板</a>
+                        </div>
+                    </div>
+                    
+                    <div class="material-item">
+                        <div class="material-icon"><i class="fas fa-file-medical"></i></div>
+                        <div class="material-content">
+                            <div class="material-name">医院死亡证明</div>
+                            <a href="javascript:void(0)" class="material-action">查看样例</a>
+                        </div>
+                    </div>
+                    
+                    <div class="material-item">
+                        <div class="material-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="material-content">
+                            <div class="material-name">民政局申请表</div>
+                            <a href="javascript:void(0)" class="material-action">下载并自动预填</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="office-info">
+                    <div class="office-title"><i class="fas fa-building"></i> 办理地点</div>
+                    <div class="office-address">泸州市殡葬管理处 - 龙马潭区龙马大道108号</div>
+                    <div class="office-hours">工作时间: 周一至周五 9:00-17:00</div>
+                    <div class="office-contact">咨询电话: 0830-12345678</div>
+                </div>
+            `;
+            
+            showCustomDialog(`${taskName} - 所需材料`, materialsHtml, "关闭");
+        }
+        
+        // 显示市场可选任务
+        function showMarketTask(taskName) {
+            // 显示市场化服务推荐
+            const servicesHtml = `
+                <div class="services-list">
+                    <div class="service-item">
+                        <div class="service-header">
+                            <img src="../images/service-1.jpg" class="service-img">
+                            <div class="service-badge"><i class="fas fa-check-circle"></i> 已认证</div>
+                        </div>
+                        <div class="service-content">
+                            <div class="service-name">泸州市殡葬服务中心</div>
+                            <div class="service-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span>4.8 (328评价)</span>
+                            </div>
+                            <div class="service-price">¥880起</div>
+                            <button class="service-btn">立即预约</button>
+                        </div>
+                    </div>
+                    
+                    <div class="service-item">
+                        <div class="service-header">
+                            <img src="../images/service-2.jpg" class="service-img">
+                            <div class="service-badge"><i class="fas fa-check-circle"></i> 已认证</div>
+                        </div>
+                        <div class="service-content">
+                            <div class="service-name">安心殡仪服务</div>
+                            <div class="service-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span>4.2 (156评价)</span>
+                            </div>
+                            <div class="service-price">¥780起</div>
+                            <button class="service-btn">立即预约</button>
+                        </div>
+                    </div>
+                    
+                    <div class="service-item">
+                        <div class="service-header">
+                            <img src="../images/service-3.jpg" class="service-img">
+                            <div class="service-badge"><i class="fas fa-check-circle"></i> 已认证</div>
+                        </div>
+                        <div class="service-content">
+                            <div class="service-name">龙马潭殡仪馆</div>
+                            <div class="service-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span>5.0 (89评价)</span>
+                            </div>
+                            <div class="service-price">¥980起</div>
+                            <button class="service-btn">立即预约</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="compare-btn-container">
+                    <button class="compare-btn"><i class="fas fa-exchange-alt"></i> 价格与服务比较</button>
+                </div>
+            `;
+            
+            showCustomDialog(`${taskName} - 服务推荐`, servicesHtml, "关闭");
+        }
+        
+        // 显示工具
+        function showTool(toolName) {
+            alert(`即将打开工具：${toolName}`);
+            // 根据工具名称跳转到相应页面
+            // window.location.href = `tools/${toolName.toLowerCase().replace(/\s/g, '-')}.html`;
+        }
+        
+        // 开始创建流程
+        function startProcessCreation() {
+            alert('正在跳转到白事流程创建页面...');
+            // 跳转到创建流程页面
+            // window.location.href = 'create-process.html';
+        }
+        
+        // 显示自定义弹窗
+        function showCustomDialog(title, content, buttonText) {
+            // 创建弹窗元素
+            const dialog = document.createElement('div');
+            dialog.className = 'custom-dialog';
+            
+            dialog.innerHTML = `
+                <div class="dialog-container">
+                    <div class="dialog-header">
+                        <h3>${title}</h3>
+                        <button class="dialog-close"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="dialog-content">
+                        ${content}
+                    </div>
+                    ${buttonText ? `<div class="dialog-footer">
+                        <button class="dialog-btn">${buttonText}</button>
+                    </div>` : ''}
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(dialog);
+            
+            // 防止页面滚动
+            document.body.style.overflow = 'hidden';
+            
+            // 添加关闭事件
+            const closeDialog = () => {
+                document.body.removeChild(dialog);
+                document.body.style.overflow = '';
+            };
+            
+            dialog.querySelector('.dialog-close').addEventListener('click', closeDialog);
+            
+            if (buttonText) {
+                dialog.querySelector('.dialog-btn').addEventListener('click', closeDialog);
+            }
+            
+            // 点击外部区域关闭
+            dialog.addEventListener('click', e => {
+                if (e.target === dialog) {
+                    closeDialog();
+                }
+            });
+            
+            // 添加弹窗样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .custom-dialog {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                }
+                
+                .dialog-container {
+                    width: 90%;
+                    max-width: 400px;
+                    max-height: 80vh;
+                    background-color: white;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .dialog-header {
+                    padding: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #eee;
+                }
+                
+                .dialog-header h3 {
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 500;
+                }
+                
+                .dialog-close {
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                    color: #999;
+                }
+                
+                .dialog-content {
+                    padding: 15px;
+                    overflow-y: auto;
+                    max-height: 60vh;
+                }
+                
+                .dialog-footer {
+                    padding: 10px 15px 15px;
+                    text-align: center;
+                    border-top: 1px solid #eee;
+                }
+                
+                .dialog-btn {
+                    background: var(--gradient-primary);
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 8px 20px;
+                    font-size: 14px;
+                }
+                
+                /* 流程节点样式 */
+                .process-nodes {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                
+                .process-node {
+                    display: flex;
+                    align-items: flex-start;
+                    padding: 12px 0;
+                    border-bottom: 1px solid #eee;
+                }
+                
+                .process-node:last-child {
+                    border-bottom: none;
+                }
+                
+                .process-node i {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 10px;
+                    flex-shrink: 0;
+                }
+                
+                .gov-node i {
+                    background-color: rgba(231, 76, 60, 0.1);
+                    color: var(--red-color);
+                }
+                
+                .market-node i {
+                    background-color: rgba(52, 152, 219, 0.1);
+                    color: var(--blue-color);
+                }
+                
+                .node-content {
+                    flex: 1;
+                }
+                
+                .node-name {
+                    font-size: 14px;
+                    font-weight: 500;
+                    margin-bottom: 3px;
+                }
+                
+                .node-deadline {
+                    font-size: 12px;
+                    color: var(--text-color-light);
+                }
+                
+                /* 问卷调查样式 */
+                .survey-container {
+                    padding: 10px 0;
+                }
+                
+                .survey-progress {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 20px;
+                }
+                
+                .progress-step {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    background-color: #eee;
+                    color: #999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                
+                .progress-step.active {
+                    background-color: var(--primary-color);
+                    color: white;
+                }
+                
+                .progress-line {
+                    width: 50px;
+                    height: 2px;
+                    background-color: #eee;
+                }
+                
+                .survey-title {
+                    font-size: 16px;
+                    font-weight: 500;
+                    margin-bottom: 15px;
+                    text-align: center;
+                }
+                
+                .survey-options {
+                    margin-bottom: 20px;
+                }
+                
+                .survey-option {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px;
+                    border: 1px solid #eee;
+                    border-radius: 5px;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+                }
+                
+                .survey-option input {
+                    margin-right: 10px;
+                }
+                
+                .survey-buttons {
+                    text-align: center;
+                }
+                
+                .survey-btn {
+                    background: var(--gradient-primary);
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 8px 20px;
+                    font-size: 14px;
+                }
+                
+                /* 材料清单样式 */
+                .materials-list {
+                    margin-bottom: 20px;
+                }
+                
+                .material-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 12px 0;
+                    border-bottom: 1px solid #eee;
+                }
+                
+                .material-item:last-child {
+                    border-bottom: none;
+                }
+                
+                .material-icon {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background-color: var(--primary-light);
+                    color: var(--primary-color);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                }
+                
+                .material-content {
+                    flex: 1;
+                }
+                
+                .material-name {
+                    font-size: 14px;
+                    margin-bottom: 5px;
+                }
+                
+                .material-action {
+                    font-size: 13px;
+                    color: var(--primary-color);
+                    text-decoration: none;
+                }
+                
+                .office-info {
+                    background-color: var(--primary-light);
+                    padding: 15px;
+                    border-radius: 5px;
+                }
+                
+                .office-title {
+                    font-size: 15px;
+                    font-weight: 500;
+                    margin-bottom: 10px;
+                    color: var(--primary-color);
+                }
+                
+                .office-address, .office-hours, .office-contact {
+                    font-size: 13px;
+                    margin-bottom: 5px;
+                    color: var(--text-color);
+                }
+                
+                /* 服务列表样式 */
+                .services-list {
+                    margin-bottom: 15px;
+                }
+                
+                .service-item {
+                    background-color: #f8f8f8;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    margin-bottom: 15px;
+                }
+                
+                .service-header {
+                    position: relative;
+                }
+                
+                .service-img {
+                    width: 100%;
+                    height: 120px;
+                    object-fit: cover;
+                }
+                
+                .service-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background-color: rgba(255, 255, 255, 0.9);
+                    color: var(--green-color);
+                    padding: 3px 8px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    display: flex;
+                    align-items: center;
+                }
+                
+                .service-badge i {
+                    margin-right: 3px;
+                }
+                
+                .service-content {
+                    padding: 12px;
+                }
+                
+                .service-name {
+                    font-size: 15px;
+                    font-weight: 500;
+                    margin-bottom: 5px;
+                }
+                
+                .service-rating {
+                    font-size: 13px;
+                    color: var(--yellow-color);
+                    margin-bottom: 8px;
+                }
+                
+                .service-rating i {
+                    margin-right: 2px;
+                }
+                
+                .service-rating span {
+                    color: var(--text-color-light);
+                    margin-left: 5px;
+                }
+                
+                .service-price {
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: var(--red-color);
+                    margin-bottom: 8px;
+                }
+                
+                .service-btn {
+                    background-color: var(--primary-color);
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 6px 12px;
+                    font-size: 13px;
+                    width: 100%;
+                }
+                
+                .compare-btn-container {
+                    text-align: center;
+                }
+                
+                .compare-btn {
+                    background-color: white;
+                    border: 1px solid var(--primary-color);
+                    color: var(--primary-color);
+                    border-radius: 5px;
+                    padding: 8px 15px;
+                    font-size: 13px;
+                }
+                
+                .compare-btn i {
+                    margin-right: 5px;
+                }
+            `;
+            
+            document.head.appendChild(style);
+        }
+    </script>
+</body>
+</html> 

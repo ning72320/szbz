@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>绿色殡葬</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #388E3C;
+            --primary-light: #C8E6C9;
+            --accent-color: #8BC34A;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --divider-color: #BDBDBD;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #4CAF50, #388E3C);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: var(--text-primary);
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            background-color: #f8f8f8;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 80px;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px 20px;
+            position: relative;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+        }
+        
+        .header-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .header-subtitle {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .banner {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: -30px;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .page-content {
+            padding: 0 20px;
+        }
+        
+        .intro-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 0 15px;
+            margin-top: -30px;
+            position: relative;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .section-title {
+            color: var(--primary-dark);
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .intro-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .green-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .method-list {
+            margin-top: 20px;
+        }
+        
+        .method-item {
+            display: flex;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .method-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 22px;
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+        
+        .method-content {
+            flex: 1;
+        }
+        
+        .method-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .eco-tag {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+        
+        .method-desc {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        
+        .method-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .benefits-list {
+            margin-top: 15px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .benefit-icon {
+            color: var(--accent-color);
+            margin-right: 10px;
+            margin-top: 2px;
+        }
+        
+        .benefit-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+        
+        .policy-card {
+            background-color: rgba(139, 195, 74, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .policy-title {
+            font-size: 16px;
+            color: var(--primary-dark);
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .policy-title i {
+            margin-right: 8px;
+        }
+        
+        .policy-item {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .policy-item:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+        }
+        
+        .cta-button {
+            display: block;
+            background: var(--gradient-primary);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .qa-section {
+            margin-top: 15px;
+        }
+        
+        .qa-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--divider-color);
+            padding-bottom: 15px;
+        }
+        
+        .qa-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .qa-question {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .qa-question i {
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--primary-color);
+        }
+        
+        .qa-answer {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            padding-left: 25px;
+        }
+        
+        .testimonial-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .testimonial-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        .testimonial-author {
+            text-align: right;
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .steps-list {
+            counter-reset: steps;
+            margin-top: 15px;
+        }
+        
+        .step-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .step-item:before {
+            counter-increment: steps;
+            content: counter(steps);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        
+        .step-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .step-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .eco-stat {
+            display: flex;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            flex: 1;
+            padding: 10px;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding-bottom: 15px;
+        }
+        
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 430px;
+            margin: 0 auto;
+            z-index: 1000;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+
+        /* 媒体查询适配 */
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="content">
+            <div class="header">
+                <a href="home.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-title">绿色殡葬</div>
+                <div class="header-subtitle">环保低碳 生态安葬</div>
+            </div>
+            
+            <img src="../images/green-funeral-banner.jpg" class="banner" alt="绿色殡葬">
+            
+            <div class="page-content">
+                <div class="intro-section">
+                    <div class="section-title">
+                        <i class="fas fa-leaf"></i>
+                        什么是绿色殡葬
+                    </div>
+                    <p class="intro-text">
+                        绿色殡葬是一种环保、低碳、可持续发展的殡葬方式，倡导简约、节俭、文明的丧葬礼仪，以尊重生命、保护环境、节约资源为核心理念，为逝者提供回归自然的安息方式。
+                    </p>
+                    <div class="eco-stat">
+                        <div class="stat-item">
+                            <div class="stat-number">80%</div>
+                            <div class="stat-label">节约土地资源</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">60%</div>
+                            <div class="stat-label">降低碳排放</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50%</div>
+                            <div class="stat-label">减少家庭负担</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="green-card">
+                    <div class="section-title">
+                        <i class="fas fa-seedling"></i>
+                        绿色殡葬方式
+                    </div>
+                    
+                    <div class="method-list">
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <div class="method-content">
+                                <div class="method-title">
+                                    树葬 <span class="eco-tag">最环保</span>
+                                </div>
+                                <div class="method-desc">
+                                    将骨灰作为养分埋葬在树木根部，以树木作为纪念碑，让逝者化作树木新生，蓬勃生长，永葆生机。
+                                </div>
+                                <img src="../images/green-funeral/tree-burial.jpg" class="method-img" alt="树葬">
+                            </div>
+                        </div>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-spa"></i>
+                            </div>
+                            <div class="method-content">
+                                <div class="method-title">
+                                    花坛葬 <span class="eco-tag">推荐</span>
+                                </div>
+                                <div class="method-desc">
+                                    将骨灰埋葬在专用的花坛中，播种花卉，让逝者化作美丽的花朵，点缀自然，芬芳四季。
+                                </div>
+                                <img src="../images/green-funeral/flower-burial.jpg" class="method-img" alt="花坛葬">
+                            </div>
+                        </div>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-water"></i>
+                            </div>
+                            <div class="method-content">
+                                <div class="method-title">
+                                    海葬
+                                </div>
+                                <div class="method-desc">
+                                    将骨灰撒入大海，让逝者与大海融为一体，成为海洋的一部分，广阔无边，自由自在。
+                                </div>
+                                <img src="../images/green-funeral/sea-burial.jpg" class="method-img" alt="海葬">
+                            </div>
+                        </div>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-mountain"></i>
+                            </div>
+                            <div class="method-content">
+                                <div class="method-title">
+                                    草坪葬
+                                </div>
+                                <div class="method-desc">
+                                    将骨灰埋葬在草坪下，不立碑不留坟，让逝者回归自然，在绿草如茵的环境中安息。
+                                </div>
+                                <img src="../images/green-funeral/lawn-burial.jpg" class="method-img" alt="草坪葬">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="green-card">
+                    <div class="section-title">
+                        <i class="fas fa-heart"></i>
+                        绿色殡葬优势
+                    </div>
+                    
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <div class="benefit-text">
+                                <strong>环保节地</strong>：有效节约土地资源，减少墓碑、墓穴等对土地的占用
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <div class="benefit-text">
+                                <strong>低碳环保</strong>：减少碳排放，降低对环境的负面影响
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <div class="benefit-text">
+                                <strong>经济实惠</strong>：费用相对传统墓葬大幅降低，减轻家庭经济负担
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <div class="benefit-text">
+                                <strong>生态美观</strong>：形成自然景观，为后人提供优美的祭扫环境
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <div class="benefit-text">
+                                <strong>精神传承</strong>：体现逝者对自然的热爱，树立环保理念的家风
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            "选择树葬是对父亲一生热爱自然的最好纪念，每年清明节，我们不是去看冰冷的墓碑，而是去看一棵充满生机的树木，仿佛父亲依然与我们同在。"
+                        </div>
+                        <div class="testimonial-author">— 张先生，选择树葬的家属</div>
+                    </div>
+                </div>
+                
+                <div class="green-card">
+                    <div class="section-title">
+                        <i class="fas fa-file-alt"></i>
+                        政策支持
+                    </div>
+                    
+                    <div class="policy-card">
+                        <div class="policy-title">
+                            <i class="fas fa-award"></i> 政府激励措施
+                        </div>
+                        
+                        <div class="policy-item">
+                            选择绿色殡葬可获得政府补贴，最高可达3000元
+                        </div>
+                        
+                        <div class="policy-item">
+                            部分地区对选择海葬的家庭提供专项补贴
+                        </div>
+                        
+                        <div class="policy-item">
+                            免除绿色殡葬区域的管理维护费用
+                        </div>
+                        
+                        <div class="policy-item">
+                            提供免费的纪念服务和在线追思平台
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="green-card">
+                    <div class="section-title">
+                        <i class="fas fa-question-circle"></i>
+                        常见问题
+                    </div>
+                    
+                    <div class="qa-section">
+                        <div class="qa-item">
+                            <div class="qa-question">
+                                <i class="fas fa-question"></i> 绿色殡葬会影响祭祀传统吗？
+                            </div>
+                            <div class="qa-answer">
+                                不会。绿色殡葬改变的只是安葬方式，家属仍可通过献花、网上追思等文明方式表达对逝者的怀念，传承敬老爱亲的美德。
+                            </div>
+                        </div>
+                        
+                        <div class="qa-item">
+                            <div class="qa-question">
+                                <i class="fas fa-question"></i> 如何在绿色殡葬区找到自己的亲人？
+                            </div>
+                            <div class="qa-answer">
+                                绿色殡葬区都有专业的电子定位系统和纪念牌。同时，我们提供手机APP导航和查询服务，方便家属准确找到逝者安息地。
+                            </div>
+                        </div>
+                        
+                        <div class="qa-item">
+                            <div class="qa-question">
+                                <i class="fas fa-question"></i> 绿色殡葬的纪念方式有哪些？
+                            </div>
+                            <div class="qa-answer">
+                                除了传统的献花、祭扫外，我们还提供在线纪念馆、纪念小卡片、纪念树牌等多种方式，既环保又能表达思念之情。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="green-card">
+                    <div class="section-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        申请流程
+                    </div>
+                    
+                    <div class="steps-list">
+                        <div class="step-item">
+                            <div class="step-title">咨询了解</div>
+                            <div class="step-desc">通过电话、网站或亲自到访咨询了解绿色殡葬详情</div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-title">预约考察</div>
+                            <div class="step-desc">预约参观绿色殡葬区域，实地了解环境与设施</div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-title">提交申请</div>
+                            <div class="step-desc">填写申请表格，提供必要的证明文件</div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-title">缴费确认</div>
+                            <div class="step-desc">缴纳相关费用，签署协议确认</div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-title">安葬仪式</div>
+                            <div class="step-desc">在专业人员指导下举行绿色安葬仪式</div>
+                        </div>
+                    </div>
+                    
+                    <a href="javascript:void(0)" class="cta-button" onclick="alert('正在预约咨询服务，请稍候...')">
+                        预约咨询服务
+                    </a>
+                </div>
+                
+                <div class="footer">
+                    &copy; 2023 泸州数字殡葬平台 · <a href="javascript:void(0)">隐私政策</a> · <a href="javascript:void(0)">服务条款</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="tab-bar">
+            <div class="tab-item" data-page="home.html">
+                <i class="tab-icon fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-page="funeral-manager.html">
+                <i class="tab-icon fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item" data-page="profile.html">
+                <i class="tab-icon fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 图片加载错误处理
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.onerror = function() {
+                    this.src = '../images/placeholder.jpg';
+                }
+            });
+            
+            // 初始化页面链接和导航栏
+            const tabItems = document.querySelectorAll('.tab-item');
+            tabItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-page');
+                    if (target) {
+                        window.location.href = target;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

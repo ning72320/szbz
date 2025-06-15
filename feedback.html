@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>投诉建议</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color: #6A1B9A;
+            --primary-light: rgba(106, 27, 154, 0.1);
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --error-color: #F44336;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #f8f8f8;
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 932px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background-color: #f8f8f8;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 90px;
+        }
+        
+        .header {
+            position: relative;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 20px 15px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .header-title {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-subtitle {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        
+        .feedback-container {
+            padding: 20px;
+        }
+        
+        .feedback-tabs {
+            display: flex;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .feedback-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 15px;
+            color: #666;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .feedback-tab.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .feedback-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .feedback-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .card-title {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            resize: none;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: white;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.825L1.175 4 2.05 3.125 6 7.075 9.95 3.125 10.825 4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            transition: border-color 0.3s;
+        }
+        
+        .form-select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-input {
+            margin-right: 8px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .radio-input:checked {
+            border-color: var(--primary-color);
+        }
+        
+        .radio-input:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+        
+        .radio-label {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .image-upload {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .upload-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            border: 1px dashed #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+        
+        .upload-icon {
+            font-size: 24px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .upload-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .preview-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-remove {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 0 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-input {
+            margin-right: 8px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .checkbox-input:checked {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+        }
+        
+        .checkbox-input:checked::after {
+            content: '\2714';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+        }
+        
+        .checkbox-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .checkbox-label a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .submit-button {
+            width: 100%;
+            padding: 15px 0;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .submit-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .feedback-history {
+            margin-top: 20px;
+        }
+        
+        .history-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .history-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .history-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: var(--warning-color);
+        }
+        
+        .status-replied {
+            background-color: var(--success-color);
+        }
+        
+        .status-closed {
+            background-color: #999;
+        }
+        
+        .history-content {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .history-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .history-empty {
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .empty-icon {
+            font-size: 50px;
+            color: #ddd;
+            margin-bottom: 10px;
+        }
+        
+        .empty-text {
+            font-size: 15px;
+            color: #999;
+        }
+        
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .tag-item {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+            cursor: pointer;
+        }
+        
+        .tag-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .success-feedback {
+            text-align: center;
+            padding: 30px 0;
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 60px;
+            color: var(--success-color);
+            margin-bottom: 15px;
+        }
+        
+        .success-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .success-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .success-button {
+            display: inline-block;
+            padding: 10px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        .dynamic-island {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 20px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 99;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon,
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <!-- Dynamic Island模拟 -->
+        <div class="dynamic-island"></div>
+        
+        <div class="content">
+            <div class="header">
+                <a href="index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-title">投诉建议</div>
+                <div class="header-subtitle">您的反馈是我们进步的动力</div>
+            </div>
+            
+            <div class="feedback-container">
+                <div class="feedback-tabs">
+                    <div class="feedback-tab active" data-tab="feedback-form">提交反馈</div>
+                    <div class="feedback-tab" data-tab="feedback-history">我的反馈</div>
+                </div>
+                
+                <!-- 反馈表单 -->
+                <div id="feedback-form" class="tab-content active">
+                    <div class="feedback-card">
+                        <div class="card-title">
+                            <i class="fas fa-clipboard-list"></i> 基本信息
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">反馈类型</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="feedback-type" id="type-suggestion" class="radio-input" checked>
+                                    <label for="type-suggestion" class="radio-label">意见建议</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="feedback-type" id="type-complaint" class="radio-input">
+                                    <label for="type-complaint" class="radio-label">投诉</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="feedback-type" id="type-consultation" class="radio-input">
+                                    <label for="type-consultation" class="radio-label">咨询</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">反馈对象</label>
+                            <select class="form-select">
+                                <option value="">请选择反馈对象</option>
+                                <option value="service">服务内容</option>
+                                <option value="staff">服务人员</option>
+                                <option value="app">小程序/网站</option>
+                                <option value="price">价格收费</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-card">
+                        <div class="card-title">
+                            <i class="fas fa-edit"></i> 反馈详情
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">反馈标题</label>
+                            <input type="text" class="form-input" placeholder="请输入反馈标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">反馈内容</label>
+                            <textarea class="form-textarea" placeholder="请详细描述您的问题或建议，以便我们更好地为您解决问题"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">上传图片（可选，最多3张）</label>
+                            <div class="image-upload">
+                                <div class="upload-item">
+                                    <i class="fas fa-plus upload-icon"></i>
+                                    <span class="upload-text">添加图片</span>
+                                    <input type="file" class="upload-input" accept="image/*">
+                                </div>
+                                <!-- 图片预览会在这里动态添加 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-card">
+                        <div class="card-title">
+                            <i class="fas fa-user"></i> 联系方式
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">联系人</label>
+                            <input type="text" class="form-input" placeholder="请输入您的姓名">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">手机号码</label>
+                            <input type="tel" class="form-input" placeholder="请输入您的手机号码">
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="agree-policy" class="checkbox-input">
+                            <label for="agree-policy" class="checkbox-label">我已阅读并同意<a href="javascript:void(0)">《用户反馈协议》</a></label>
+                        </div>
+                    </div>
+                    
+                    <button class="submit-button" id="submit-feedback">提交反馈</button>
+                    
+                    <!-- 提交成功反馈 -->
+                    <div class="success-feedback" id="success-feedback">
+                        <i class="fas fa-check-circle success-icon"></i>
+                        <div class="success-title">反馈提交成功</div>
+                        <div class="success-desc">感谢您的反馈，我们会尽快处理并回复您的问题</div>
+                        <div class="success-button" onclick="resetForm()">返回</div>
+                    </div>
+                </div>
+                
+                <!-- 反馈历史 -->
+                <div id="feedback-history" class="tab-content" style="display: none;">
+                    <div class="tag-list">
+                        <div class="tag-item active">全部</div>
+                        <div class="tag-item">意见建议</div>
+                        <div class="tag-item">投诉</div>
+                        <div class="tag-item">咨询</div>
+                    </div>
+                    
+                    <div class="feedback-history">
+                        <div class="history-item">
+                            <div class="history-header">
+                                <div class="history-title">关于殡仪馆设施的建议</div>
+                                <div class="history-status status-replied">已回复</div>
+                            </div>
+                            <div class="history-content">建议在等候区增加一些饮水机和休息座椅，方便家属等待...</div>
+                            <div class="history-info">
+                                <span>意见建议</span>
+                                <span>2023-06-15</span>
+                            </div>
+                        </div>
+                        
+                        <div class="history-item">
+                            <div class="history-header">
+                                <div class="history-title">客服电话无人接听</div>
+                                <div class="history-status status-pending">处理中</div>
+                            </div>
+                            <div class="history-content">拨打了客服电话多次，但一直无人接听，希望能够改善...</div>
+                            <div class="history-info">
+                                <span>投诉</span>
+                                <span>2023-06-10</span>
+                            </div>
+                        </div>
+                        
+                        <div class="history-item">
+                            <div class="history-header">
+                                <div class="history-title">咨询墓地维护事宜</div>
+                                <div class="history-status status-closed">已关闭</div>
+                            </div>
+                            <div class="history-content">想了解一下墓地的日常维护是否有专人负责？费用如何...</div>
+                            <div class="history-info">
+                                <span>咨询</span>
+                                <span>2023-05-25</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="tab-bar">
+            <div class="tab-item" data-page="index.html">
+                <i class="tab-icon fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-page="funeral-manager.html">
+                <i class="tab-icon fas fa-clipboard-list"></i>
+                <span>白事管家</span>
+            </div>
+            <div class="tab-item active" data-page="profile.html">
+                <i class="tab-icon fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面链接
+            initPageLinks();
+            
+            // 初始化底部导航
+            initTabBar();
+            
+            // 标签切换
+            const tabs = document.querySelectorAll('.feedback-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // 为当前点击的标签添加active类
+                    this.classList.add('active');
+                    
+                    // 显示对应的内容
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(tabId).style.display = 'block';
+                });
+            });
+            
+            // 历史标签切换
+            const historyTags = document.querySelectorAll('.tag-item');
+            historyTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    historyTags.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    // 这里可以添加筛选历史记录的逻辑
+                });
+            });
+            
+            // 图片上传预览
+            const uploadInput = document.querySelector('.upload-input');
+            const imageUpload = document.querySelector('.image-upload');
+            
+            uploadInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const previewItems = document.querySelectorAll('.preview-item');
+                    if (previewItems.length >= 3) {
+                        alert('最多只能上传3张图片');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" class="preview-img">
+                            <div class="preview-remove"><i class="fas fa-times"></i></div>
+                        `;
+                        
+                        // 添加到上传按钮前
+                        imageUpload.insertBefore(previewItem, document.querySelector('.upload-item'));
+                        
+                        // 绑定删除按钮事件
+                        previewItem.querySelector('.preview-remove').addEventListener('click', function() {
+                            previewItem.remove();
+                        });
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                    
+                    // 清空input，以便可以上传相同的图片
+                    this.value = '';
+                }
+            });
+            
+            // 提交反馈
+            document.getElementById('submit-feedback').addEventListener('click', function() {
+                // 简单表单验证
+                const feedbackContent = document.querySelector('.form-textarea').value;
+                const agreePolicy = document.getElementById('agree-policy').checked;
+                
+                if (!feedbackContent) {
+                    alert('请填写反馈内容');
+                    return;
+                }
+                
+                if (!agreePolicy) {
+                    alert('请阅读并同意用户反馈协议');
+                    return;
+                }
+                
+                // 显示成功提示
+                document.getElementById('feedback-form').querySelectorAll('.feedback-card, .submit-button').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.getElementById('success-feedback').style.display = 'block';
+            });
+        });
+        
+        // 重置表单
+        function resetForm() {
+            document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+                input.value = '';
+            });
+            
+            document.querySelectorAll('.preview-item').forEach(item => {
+                item.remove();
+            });
+            
+            document.getElementById('agree-policy').checked = false;
+            
+            document.getElementById('feedback-form').querySelectorAll('.feedback-card, .submit-button').forEach(el => {
+                el.style.display = 'block';
+            });
+            document.getElementById('success-feedback').style.display = 'none';
+        }
+    </script>
+</body>
+</html> 

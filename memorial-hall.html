@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>在线纪念 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color: #5d78a8;
+            --primary-light: rgba(93, 120, 168, 0.1);
+            --primary-dark: #4a5f8a;
+            --accent-color: #4a7a9b;
+            --red-color: #e74c3c;
+            --blue-color: #3498db;
+            --green-color: #2ecc71;
+            --yellow-color: #f39c12;
+            --text-color: #333;
+            --text-color-light: #777;
+            --border-color: #e0e0e0;
+            --bg-color: #f8f8f8;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #5d78a8, #4a7a9b);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .wxapp-container {
+            width: 430px;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            background-color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        /* 头部样式 */
+        .status-bar {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            background-color: white;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .back {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        .title {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .right-action {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        /* 纪念馆头部 */
+        .header-banner {
+            position: relative;
+            height: 160px;
+            background: var(--gradient-primary);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .header-title {
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .header-desc {
+            font-size: 14px;
+            opacity: 0.9;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        
+        /* 创建纪念馆按钮 */
+        .create-memorial-container {
+            margin: 15px;
+        }
+        
+        .create-memorial-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            box-shadow: var(--card-shadow);
+            border: none;
+            width: 100%;
+        }
+        
+        .create-memorial-btn i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        /* 分类标签 */
+        .category-tabs {
+            display: flex;
+            background-color: white;
+            padding: 0 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        
+        .category-tab {
+            padding: 15px 0;
+            margin-right: 20px;
+            font-size: 15px;
+            color: var(--text-color-light);
+            position: relative;
+        }
+        
+        .category-tab.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .category-tab.active:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        /* 纪念馆列表和卡片 */
+        .memorial-list {
+            padding: 0 15px 20px;
+        }
+        
+        .memorial-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .memorial-cover {
+            position: relative;
+            height: 160px;
+        }
+        
+        .memorial-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .memorial-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 15px;
+            color: white;
+        }
+        
+        .memorial-name {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .memorial-date {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .memorial-info {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .memorial-desc {
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        .memorial-creator {
+            font-size: 13px;
+            color: var(--text-color-light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .memorial-creator i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+        
+        .memorial-stats {
+            display: flex;
+            padding: 10px 15px;
+        }
+        
+        .memorial-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            font-size: 13px;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+        }
+        
+        .stat-label {
+            color: var(--text-color-light);
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 30px;
+        }
+        
+        .empty-icon {
+            font-size: 50px;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+        }
+        
+        .empty-text {
+            font-size: 15px;
+            color: var(--text-color-light);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        /* 底部导航 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 430px;
+            margin: 0 auto;
+            z-index: 1000;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            flex: 1;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-icon {
+            color: var(--primary-color);
+        }
+        
+        .tab-item span {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .tab-item.active span {
+            color: var(--primary-color);
+        }
+        
+        /* 媒体查询 */
+        @media (max-width: 430px) {
+            .wxapp-container {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">在线纪念</div>
+            <div class="right-action">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 头部横幅 -->
+            <div class="header-banner">
+                <div class="header-title">数字纪念馆</div>
+                <div class="header-desc">珍藏回忆，永久纪念，让思念穿越时空</div>
+            </div>
+            
+            <!-- 创建纪念馆按钮 -->
+            <div class="create-memorial-container">
+                <button class="create-memorial-btn" id="create-memorial">
+                    <i class="fas fa-plus-circle"></i>
+                    创建纪念馆
+                </button>
+            </div>
+            
+            <!-- 分类标签 -->
+            <div class="category-tabs">
+                <div class="category-tab active" data-category="all">全部</div>
+                <div class="category-tab" data-category="mine">我创建的</div>
+                <div class="category-tab" data-category="relative">亲友</div>
+                <div class="category-tab" data-category="public">公众</div>
+            </div>
+            
+            <!-- 纪念馆列表 -->
+            <div class="memorial-list" id="memorial-list">
+                <!-- 示例纪念馆卡片 1 -->
+                <div class="memorial-card" data-id="1">
+                    <div class="memorial-cover">
+                        <img src="../images/memorial-1.jpg" class="memorial-image" alt="纪念馆">
+                        <div class="memorial-overlay">
+                            <div class="memorial-name">陈忠华先生纪念馆</div>
+                            <div class="memorial-date">1950.3.15 - 2022.8.22</div>
+                        </div>
+                    </div>
+                    <div class="memorial-info">
+                        <div class="memorial-desc">
+                            爱家爱国的一生，永远怀念我们敬爱的父亲、丈夫和好友。
+                        </div>
+                        <div class="memorial-creator">
+                            <i class="fas fa-user-circle"></i>
+                            <span>创建者: 陈小明</span>
+                        </div>
+                    </div>
+                    <div class="memorial-stats">
+                        <div class="memorial-stat">
+                            <div class="stat-value">235</div>
+                            <div class="stat-label">祭扫人次</div>
+                        </div>
+                        <div class="memorial-stat">
+                            <div class="stat-value">128</div>
+                            <div class="stat-label">留言祝福</div>
+                        </div>
+                        <div class="memorial-stat">
+                            <div class="stat-value">56</div>
+                            <div class="stat-label">相册数量</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 示例纪念馆卡片 2 -->
+                <div class="memorial-card" data-id="2">
+                    <div class="memorial-cover">
+                        <img src="../images/memorial-2.jpg" class="memorial-image" alt="纪念馆">
+                        <div class="memorial-overlay">
+                            <div class="memorial-name">王梅芳女士纪念馆</div>
+                            <div class="memorial-date">1955.6.12 - 2023.4.15</div>
+                        </div>
+                    </div>
+                    <div class="memorial-info">
+                        <div class="memorial-desc">
+                            慈祥的母亲，睿智的教师，您的爱与智慧将永远指引我们前行。
+                        </div>
+                        <div class="memorial-creator">
+                            <i class="fas fa-user-circle"></i>
+                            <span>创建者: 王丽</span>
+                        </div>
+                    </div>
+                    <div class="memorial-stats">
+                        <div class="memorial-stat">
+                            <div class="stat-value">186</div>
+                            <div class="stat-label">祭扫人次</div>
+                        </div>
+                        <div class="memorial-stat">
+                            <div class="stat-value">93</div>
+                            <div class="stat-label">留言祝福</div>
+                        </div>
+                        <div class="memorial-stat">
+                            <div class="stat-value">42</div>
+                            <div class="stat-label">相册数量</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 示例纪念馆卡片 3 -->
+                <div class="memorial-card" data-id="3">
+                    <div class="memorial-cover">
+                        <img src="../images/memorial-3.jpg" class="memorial-image" alt="纪念馆">
+                        <div class="memorial-overlay">
+                            <div class="memorial-name">李文涛先生纪念馆</div>
+                            <div class="memorial-date">1948.9.3 - 2023.2.20</div>
+                        </div>
+                    </div>
+                    <div class="memorial-info">
+                        <div class="memorial-desc">
+                            勤勉一生，为社会奉献，为家庭付出，您的精神将永远激励我们。
+                        </div>
+                        <div class="memorial-creator">
+                            <i class="fas fa-user-circle"></i>
+                            <span>创建者: 李强</span>
+                        </div>
+                    </div>
+                    <div class="memorial-stats">
+                        <div class="memorial-stat">
+                            <div class="stat-value">142</div>
+                            <div class="stat-label">祭扫人次</div>
+                        </div>
+                        <div class="memorial-stat">
+                            <div class="stat-value">78</div>
+                            <div class="stat-label">留言祝福</div>
+                        </div>
+                        <div class="memorial-stat">
+                            <div class="stat-value">36</div>
+                            <div class="stat-label">相册数量</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 空状态（初始隐藏） -->
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-monument"></i>
+                    </div>
+                    <div class="empty-text">
+                        还没有找到相关的纪念馆<br>
+                        点击上方按钮创建一个新的纪念馆
+                    </div>
+                    <button class="create-memorial-btn" style="max-width: 200px; margin: 0 auto;">
+                        <i class="fas fa-plus-circle"></i>
+                        创建纪念馆
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 返回按钮事件
+            document.querySelector('.back').addEventListener('click', function() {
+                window.location.href = 'home.html';
+            });
+            
+            // 底部导航栏点击事件
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    if (page) {
+                        window.location.href = page;
+                    }
+                });
+            });
+            
+            // 分类标签切换
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有标签的active类
+                    document.querySelectorAll('.category-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // 给当前标签添加active类
+                    this.classList.add('active');
+                    
+                    // 获取分类
+                    const category = this.getAttribute('data-category');
+                    
+                    // 根据分类过滤纪念馆
+                    filterMemorials(category);
+                });
+            });
+            
+            // 创建纪念馆按钮点击
+            document.getElementById('create-memorial').addEventListener('click', function() {
+                showCreateMemorialDialog();
+            });
+            
+            // 纪念馆卡片点击
+            document.querySelectorAll('.memorial-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const memorialId = this.getAttribute('data-id');
+                    navigateToMemorialDetail(memorialId);
+                });
+            });
+            
+            // 搜索按钮点击
+            document.querySelector('.right-action').addEventListener('click', function() {
+                showSearchDialog();
+            });
+        });
+        
+        // 根据分类过滤纪念馆
+        function filterMemorials(category) {
+            const memorialList = document.getElementById('memorial-list');
+            const cards = memorialList.querySelectorAll('.memorial-card');
+            const emptyState = document.getElementById('empty-state');
+            
+            // 这里模拟筛选逻辑，实际应用中应该从后端获取数据
+            let visibleCount = 0;
+            
+            if (category === 'all') {
+                // 显示所有卡片
+                cards.forEach(card => {
+                    card.style.display = 'block';
+                    visibleCount++;
+                });
+            } else if (category === 'mine') {
+                // 模拟"我创建的"分类
+                cards.forEach((card, index) => {
+                    // 假设第一个是自己创建的
+                    if (index === 0) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            } else if (category === 'relative') {
+                // 模拟"亲友"分类
+                cards.forEach((card, index) => {
+                    // 假设第二个是亲友创建的
+                    if (index === 1) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            } else if (category === 'public') {
+                // 模拟"公众"分类
+                cards.forEach((card, index) => {
+                    // 假设第三个是公众纪念馆
+                    if (index === 2) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            
+            // 如果没有显示的卡片，显示空状态
+            if (visibleCount === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+        
+        // 创建纪念馆对话框
+        function showCreateMemorialDialog() {
+            // 创建对话框元素
+            const dialog = document.createElement('div');
+            dialog.className = 'create-memorial-dialog';
+            
+            dialog.innerHTML = `
+                <div class="dialog-container">
+                    <div class="dialog-header">
+                        <h3>创建纪念馆</h3>
+                        <button class="dialog-close"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="dialog-content">
+                        <div class="dialog-form">
+                            <div class="form-group">
+                                <label class="form-label">逝者姓名</label>
+                                <input type="text" class="form-input" placeholder="请输入逝者姓名">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">生卒日期</label>
+                                <div class="date-inputs">
+                                    <input type="text" class="form-input date-input" placeholder="出生日期">
+                                    <span class="date-separator">-</span>
+                                    <input type="text" class="form-input date-input" placeholder="逝世日期">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">与逝者关系</label>
+                                <select class="form-select">
+                                    <option value="">请选择</option>
+                                    <option value="child">子女</option>
+                                    <option value="spouse">配偶</option>
+                                    <option value="parent">父母</option>
+                                    <option value="relative">其他亲属</option>
+                                    <option value="friend">朋友</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">纪念馆封面</label>
+                                <div class="upload-area">
+                                    <i class="fas fa-camera"></i>
+                                    <span>点击上传封面照片</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">简介</label>
+                                <textarea class="form-textarea" placeholder="请输入逝者生平简介"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dialog-footer">
+                        <button class="cancel-btn">取消</button>
+                        <button class="confirm-btn">创建</button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(dialog);
+            
+            // 防止页面滚动
+            document.body.style.overflow = 'hidden';
+            
+            // 关闭按钮事件
+            const closeDialog = () => {
+                document.body.removeChild(dialog);
+                document.body.style.overflow = '';
+            };
+            
+            dialog.querySelector('.dialog-close').addEventListener('click', closeDialog);
+            dialog.querySelector('.cancel-btn').addEventListener('click', closeDialog);
+            
+            // 创建按钮事件
+            dialog.querySelector('.confirm-btn').addEventListener('click', () => {
+                alert('纪念馆创建成功！');
+                closeDialog();
+                // 这里可以跳转到新创建的纪念馆详情页
+                // window.location.href = 'memorial-detail.html?id=new';
+            });
+            
+            // 点击上传区域
+            dialog.querySelector('.upload-area').addEventListener('click', () => {
+                alert('请选择一张照片作为封面');
+                // 这里可以触发文件选择对话框
+                // document.getElementById('file-upload').click();
+            });
+            
+            // 添加对话框样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .create-memorial-dialog {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                }
+                
+                .dialog-container {
+                    width: 90%;
+                    max-width: 400px;
+                    max-height: 90vh;
+                    background-color: white;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .dialog-header {
+                    padding: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #eee;
+                }
+                
+                .dialog-header h3 {
+                    margin: 0;
+                    font-size: 18px;
+                    font-weight: 500;
+                }
+                
+                .dialog-close {
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                    color: #999;
+                }
+                
+                .dialog-content {
+                    padding: 15px;
+                    overflow-y: auto;
+                    flex: 1;
+                }
+                
+                .dialog-footer {
+                    padding: 10px 15px 15px;
+                    display: flex;
+                    justify-content: flex-end;
+                    border-top: 1px solid #eee;
+                    gap: 10px;
+                }
+                
+                .cancel-btn {
+                    padding: 8px 20px;
+                    border: 1px solid #ddd;
+                    background-color: white;
+                    color: var(--text-color);
+                    border-radius: 5px;
+                    font-size: 14px;
+                }
+                
+                .confirm-btn {
+                    padding: 8px 20px;
+                    background: var(--gradient-primary);
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 14px;
+                }
+                
+                .form-group {
+                    margin-bottom: 15px;
+                }
+                
+                .form-label {
+                    display: block;
+                    font-size: 14px;
+                    color: var(--text-color);
+                    margin-bottom: 8px;
+                }
+                
+                .form-input {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    box-sizing: border-box;
+                }
+                
+                .form-select {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    background-color: white;
+                }
+                
+                .form-textarea {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    min-height: 80px;
+                    resize: vertical;
+                    box-sizing: border-box;
+                }
+                
+                .date-inputs {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                
+                .date-input {
+                    flex: 1;
+                }
+                
+                .date-separator {
+                    font-size: 16px;
+                    color: var(--text-color-light);
+                }
+                
+                .upload-area {
+                    border: 1px dashed #ddd;
+                    border-radius: 5px;
+                    padding: 20px;
+                    text-align: center;
+                    color: var(--text-color-light);
+                    cursor: pointer;
+                }
+                
+                .upload-area i {
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                    display: block;
+                }
+            `;
+            
+            document.head.appendChild(style);
+        }
+        
+        // 显示搜索对话框
+        function showSearchDialog() {
+            // 创建搜索对话框元素
+            const dialog = document.createElement('div');
+            dialog.className = 'search-dialog';
+            
+            dialog.innerHTML = `
+                <div class="search-container">
+                    <div class="search-header">
+                        <i class="fas fa-arrow-left search-back"></i>
+                        <input type="text" class="search-input" placeholder="搜索逝者姓名或纪念馆">
+                        <button class="search-btn">搜索</button>
+                    </div>
+                    <div class="search-content">
+                        <div class="search-history">
+                            <div class="search-section-title">
+                                <span>搜索历史</span>
+                                <i class="fas fa-trash"></i>
+                            </div>
+                            <div class="history-tags">
+                                <span class="history-tag">张老师</span>
+                                <span class="history-tag">王梅芳</span>
+                                <span class="history-tag">李文涛</span>
+                            </div>
+                        </div>
+                        
+                        <div class="search-hot">
+                            <div class="search-section-title">
+                                <span>热门搜索</span>
+                            </div>
+                            <div class="hot-list">
+                                <div class="hot-item">
+                                    <span class="hot-rank">1</span>
+                                    <span class="hot-name">陈忠华</span>
+                                    <span class="hot-badge">热门</span>
+                                </div>
+                                <div class="hot-item">
+                                    <span class="hot-rank">2</span>
+                                    <span class="hot-name">张明德</span>
+                                </div>
+                                <div class="hot-item">
+                                    <span class="hot-rank">3</span>
+                                    <span class="hot-name">李文涛</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(dialog);
+            
+            // 防止页面滚动
+            document.body.style.overflow = 'hidden';
+            
+            // 返回按钮事件
+            const closeDialog = () => {
+                document.body.removeChild(dialog);
+                document.body.style.overflow = '';
+            };
+            
+            dialog.querySelector('.search-back').addEventListener('click', closeDialog);
+            
+            // 搜索按钮事件
+            dialog.querySelector('.search-btn').addEventListener('click', () => {
+                const searchText = dialog.querySelector('.search-input').value.trim();
+                if (searchText) {
+                    alert(`正在搜索: ${searchText}`);
+                    closeDialog();
+                    // 这里可以跳转到搜索结果页面
+                    // window.location.href = `search-results.html?q=${encodeURIComponent(searchText)}`;
+                }
+            });
+            
+            // 搜索历史标签点击
+            dialog.querySelectorAll('.history-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const text = tag.textContent;
+                    dialog.querySelector('.search-input').value = text;
+                    dialog.querySelector('.search-btn').click();
+                });
+            });
+            
+            // 热门搜索项点击
+            dialog.querySelectorAll('.hot-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const text = item.querySelector('.hot-name').textContent;
+                    dialog.querySelector('.search-input').value = text;
+                    dialog.querySelector('.search-btn').click();
+                });
+            });
+            
+            // 清空历史
+            dialog.querySelector('.search-section-title i').addEventListener('click', () => {
+                const historyTags = dialog.querySelector('.history-tags');
+                historyTags.innerHTML = '<span class="empty-history">无搜索历史</span>';
+            });
+            
+            // 添加搜索对话框样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .search-dialog {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: white;
+                    z-index: 9999;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .search-container {
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .search-header {
+                    height: 50px;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 15px;
+                    border-bottom: 1px solid #eee;
+                }
+                
+                .search-back {
+                    font-size: 16px;
+                    color: var(--text-color);
+                    margin-right: 10px;
+                }
+                
+                .search-input {
+                    flex: 1;
+                    height: 36px;
+                    border: none;
+                    background-color: #f5f5f5;
+                    border-radius: 18px;
+                    padding: 0 15px;
+                    font-size: 14px;
+                }
+                
+                .search-btn {
+                    margin-left: 10px;
+                    padding: 0 15px;
+                    height: 36px;
+                    background-color: var(--primary-color);
+                    color: white;
+                    border: none;
+                    border-radius: 18px;
+                }
+                
+                .search-content {
+                    flex: 1;
+                    padding: 15px;
+                    overflow-y: auto;
+                }
+                
+                .search-section-title {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                    font-size: 15px;
+                    color: var(--text-color);
+                }
+                
+                .search-section-title i {
+                    color: var(--text-color-light);
+                }
+                
+                .history-tags {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    margin-bottom: 20px;
+                }
+                
+                .history-tag {
+                    padding: 5px 12px;
+                    background-color: #f5f5f5;
+                    border-radius: 15px;
+                    font-size: 13px;
+                    color: var(--text-color);
+                }
+                
+                .empty-history {
+                    font-size: 13px;
+                    color: var(--text-color-light);
+                }
+                
+                .hot-list {
+                    margin-top: 10px;
+                }
+                
+                .hot-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 0;
+                    border-bottom: 1px solid #f5f5f5;
+                }
+                
+                .hot-rank {
+                    width: 20px;
+                    text-align: center;
+                    font-weight: 500;
+                    margin-right: 10px;
+                }
+                
+                .hot-item:nth-child(1) .hot-rank {
+                    color: #e74c3c;
+                }
+                
+                .hot-item:nth-child(2) .hot-rank {
+                    color: #f39c12;
+                }
+                
+                .hot-item:nth-child(3) .hot-rank {
+                    color: #3498db;
+                }
+                
+                .hot-name {
+                    flex: 1;
+                    font-size: 14px;
+                }
+                
+                .hot-badge {
+                    padding: 2px 5px;
+                    background-color: #e74c3c;
+                    color: white;
+                    font-size: 11px;
+                    border-radius: 3px;
+                }
+            `;
+            
+            document.head.appendChild(style);
+            
+            // 聚焦搜索框
+            setTimeout(() => {
+                dialog.querySelector('.search-input').focus();
+            }, 100);
+        }
+        
+        // 跳转到纪念馆详情
+        function navigateToMemorialDetail(memorialId) {
+            // 这里应该跳转到纪念馆详情页面
+            alert(`正在进入纪念馆，ID: ${memorialId}`);
+            window.location.href = `memorial-detail.html?id=${memorialId}`;
+        }
+    </script>
+</body>
+</html> 

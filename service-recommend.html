@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务机构推荐 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .search-header {
+            background-color: white;
+            padding: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-bar {
+            display: flex;
+            margin-top: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 5px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 16px;
+            background-color: #f5f5f5;
+            font-size: 13px;
+            color: var(--text-color);
+            white-space: nowrap;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .filter-item.active {
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .filter-item i {
+            margin-right: 4px;
+        }
+        
+        .recommend-header {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .recommend-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .recommend-title i {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+        
+        .sort-by {
+            font-size: 13px;
+            color: var(--text-color-light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .sort-by i {
+            margin-left: 4px;
+            font-size: 12px;
+        }
+        
+        .service-list {
+            margin: 0 12px;
+        }
+        
+        .service-card {
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .service-header {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        
+        .service-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .service-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .service-info {
+            flex: 1;
+        }
+        
+        .service-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+        
+        .service-meta {
+            font-size: 13px;
+            color: var(--text-color-light);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .service-meta-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 5px;
+        }
+        
+        .service-meta-item i {
+            margin-right: 4px;
+            font-size: 12px;
+        }
+        
+        .service-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-color);
+            font-size: 12px;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+        
+        .service-body {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+        
+        .service-tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        
+        .service-tag {
+            background-color: #f5f5f5;
+            color: var(--text-color-light);
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .service-price {
+            color: #f5222d;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .service-price-label {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        
+        .service-actions {
+            display: flex;
+        }
+        
+        .service-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-left: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .service-btn i {
+            margin-right: 4px;
+        }
+        
+        .service-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .service-btn.outline {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .service-rating {
+            display: flex;
+            align-items: center;
+            color: #FFC107;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .service-rating-score {
+            margin-left: 4px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .service-reviews {
+            margin-left: 8px;
+            color: var(--text-color-light);
+        }
+        
+        .qualification-badge {
+            display: flex;
+            align-items: center;
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+            font-size: 12px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin-top: 8px;
+            width: fit-content;
+        }
+        
+        .qualification-badge i {
+            margin-right: 4px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">殡葬服务推荐</div>
+        </div>
+        
+        <div class="content">
+            <div class="search-header">
+                <div class="search-bar">
+                    <div class="search-input-wrap">
+                        <i class="search-icon fas fa-search"></i>
+                        <input type="text" class="search-input" placeholder="搜索服务机构">
+                    </div>
+                </div>
+                
+                <div class="filter-bar">
+                    <div class="filter-item active">
+                        <i class="fas fa-chart-line"></i>综合排序
+                    </div>
+                    <div class="filter-item">
+                        <i class="fas fa-map-marker-alt"></i>距离最近
+                    </div>
+                    <div class="filter-item">
+                        <i class="fas fa-star"></i>评分最高
+                    </div>
+                    <div class="filter-item">
+                        <i class="fas fa-sort-amount-down"></i>价格排序
+                    </div>
+                    <div class="filter-item">
+                        <i class="fas fa-filter"></i>筛选
+                    </div>
+                </div>
+            </div>
+            
+            <div class="recommend-header">
+                <div class="recommend-title">
+                    <i class="fas fa-thumbs-up"></i>推荐机构
+                </div>
+                <div class="sort-by">
+                    默认排序<i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <div class="service-list">
+                <!-- 服务机构1 -->
+                <div class="service-card" style="position: relative;">
+                    <div class="service-badge">
+                        <i class="fas fa-shield-alt"></i> 民政认证
+                    </div>
+                    
+                    <div class="service-header">
+                        <div class="service-logo">
+                            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="服务机构">
+                        </div>
+                        <div class="service-info">
+                            <div class="service-name">市殡仪馆殡葬服务中心</div>
+                            <div class="service-meta">
+                                <div class="service-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i> 3.5km
+                                </div>
+                                <div class="service-meta-item">
+                                    <i class="fas fa-clock"></i> 24小时服务
+                                </div>
+                            </div>
+                            <div class="service-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="service-rating-score">4.8</span>
+                                <span class="service-reviews">(324条评价)</span>
+                            </div>
+                            <div class="qualification-badge">
+                                <i class="fas fa-check-circle"></i>政府认证资质
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="service-body">
+                        提供全流程殡葬服务，包括遗体接运、遗体冷藏、守灵、化妆、告别仪式、火化及骨灰安置等一站式服务。
+                    </div>
+                    
+                    <div class="service-tags">
+                        <div class="service-tag">专业送行团队</div>
+                        <div class="service-tag">一站式服务</div>
+                        <div class="service-tag">价格透明</div>
+                        <div class="service-tag">设施齐全</div>
+                    </div>
+                    
+                    <div class="service-footer">
+                        <div>
+                            <span class="service-price">¥3,980</span>
+                            <span class="service-price-label">起/套餐</span>
+                        </div>
+                        <div class="service-actions">
+                            <button class="service-btn outline">
+                                <i class="fas fa-phone"></i>咨询
+                            </button>
+                            <button class="service-btn primary">
+                                <i class="fas fa-clipboard-check"></i>预约
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 服务机构2 -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-logo">
+                            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="服务机构">
+                        </div>
+                        <div class="service-info">
+                            <div class="service-name">仁和殡葬服务有限公司</div>
+                            <div class="service-meta">
+                                <div class="service-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i> 5.2km
+                                </div>
+                                <div class="service-meta-item">
+                                    <i class="fas fa-clock"></i> 08:00-20:00
+                                </div>
+                            </div>
+                            <div class="service-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="service-rating-score">4.2</span>
+                                <span class="service-reviews">(156条评价)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="service-body">
+                        专注于佛教传统殡葬仪式，提供专业法师诵经、超度等佛教礼仪服务，让逝者得到庄严尊敬的送别。
+                    </div>
+                    
+                    <div class="service-tags">
+                        <div class="service-tag">佛教礼仪</div>
+                        <div class="service-tag">专业法师</div>
+                        <div class="service-tag">灵堂布置</div>
+                    </div>
+                    
+                    <div class="service-footer">
+                        <div>
+                            <span class="service-price">¥5,680</span>
+                            <span class="service-price-label">起/套餐</span>
+                        </div>
+                        <div class="service-actions">
+                            <button class="service-btn outline">
+                                <i class="fas fa-phone"></i>咨询
+                            </button>
+                            <button class="service-btn primary">
+                                <i class="fas fa-clipboard-check"></i>预约
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 服务机构3 -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-logo">
+                            <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="服务机构">
+                        </div>
+                        <div class="service-info">
+                            <div class="service-name">安顺殡葬代办服务</div>
+                            <div class="service-meta">
+                                <div class="service-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i> 4.8km
+                                </div>
+                                <div class="service-meta-item">
+                                    <i class="fas fa-clock"></i> 全天候
+                                </div>
+                            </div>
+                            <div class="service-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="service-rating-score">4.0</span>
+                                <span class="service-reviews">(89条评价)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="service-body">
+                        专业代办各类殡葬手续，包括死亡证明、火化许可等政府手续，减轻家属奔波负担。
+                    </div>
+                    
+                    <div class="service-tags">
+                        <div class="service-tag">手续代办</div>
+                        <div class="service-tag">高效办理</div>
+                        <div class="service-tag">全程陪同</div>
+                    </div>
+                    
+                    <div class="service-footer">
+                        <div>
+                            <span class="service-price">¥1,200</span>
+                            <span class="service-price-label">起/项</span>
+                        </div>
+                        <div class="service-actions">
+                            <button class="service-btn outline">
+                                <i class="fas fa-phone"></i>咨询
+                            </button>
+                            <button class="service-btn primary">
+                                <i class="fas fa-clipboard-check"></i>预约
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding: 20px 0; color: var(--text-color-light); font-size: 14px;">
+                已显示全部服务机构 (3)
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化返回按钮
+            initBackButtons();
+            
+            // 筛选项点击
+            document.querySelectorAll('.filter-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有active类
+                    document.querySelectorAll('.filter-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    
+                    // 给当前点击项添加active类
+                    this.classList.add('active');
+                    
+                    // 这里可以添加筛选逻辑
+                    showToast('筛选条件已更新');
+                });
+            });
+            
+            // 拨打电话
+            document.querySelectorAll('.service-btn.outline').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 获取服务机构名称
+                    const serviceName = this.closest('.service-card').querySelector('.service-name').textContent;
+                    showConfirm('联系服务机构', `确定要联系"${serviceName}"吗？`, function() {
+                        window.location.href = 'tel:0123-12345678';
+                    });
+                });
+            });
+            
+            // 预约按钮
+            document.querySelectorAll('.service-btn.primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 获取服务机构名称
+                    const serviceName = this.closest('.service-card').querySelector('.service-name').textContent;
+                    showConfirm('预约服务', `确定要预约"${serviceName}"的服务吗？`, function() {
+                        showToast('预约请求已发送');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

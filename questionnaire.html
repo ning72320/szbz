@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>需求问卷 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        .questionnaire-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 15px;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .header-desc {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .steps-indicator {
+            display: flex;
+            margin: 0 20px 20px;
+            position: relative;
+        }
+        
+        .steps-indicator::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background-color: #e8e8e8;
+            z-index: 1;
+        }
+        
+        .step-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e8e8e8;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .step-item.active .step-number {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .step-item.completed .step-number {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .step-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .step-item.active .step-text {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+        
+        .step-item.completed .step-text {
+            color: var(--primary-color);
+        }
+        
+        .question-card {
+            background-color: white;
+            border-radius: 12px;
+            margin: 0 15px 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .question-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .question-options {
+            margin-bottom: 15px;
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        
+        .option-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .option-item.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(7, 193, 96, 0.05);
+        }
+        
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #c8c9cc;
+            margin-right: 12px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .option-item.selected .option-radio {
+            border-color: var(--primary-color);
+        }
+        
+        .option-item.selected .option-radio::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .option-content {
+            flex: 1;
+        }
+        
+        .option-label {
+            font-size: 15px;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        
+        .option-desc {
+            font-size: 13px;
+            color: var(--text-color-light);
+        }
+        
+        .question-hint {
+            font-size: 13px;
+            color: var(--text-color-light);
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 15px 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            margin: 0 5px;
+        }
+        
+        .range-field {
+            margin: 20px 0;
+        }
+        
+        .range-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        
+        .range-input {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 4px;
+            background: #e8e8e8;
+            outline: none;
+            border-radius: 2px;
+        }
+        
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .budget-amount {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .textarea-field {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 100px;
+            resize: none;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        
+        .textarea-field:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .input-limit {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="wxapp-container">
+        <div class="status-bar">
+            <i class="back fas fa-chevron-left"></i>
+            <div class="title">个性化需求问卷</div>
+        </div>
+        
+        <div class="content">
+            <div class="questionnaire-header">
+                <div class="header-title">为您定制专属白事服务</div>
+                <div class="header-desc">通过3步简单问卷，我们将为您制定最合适的殡葬服务流程计划</div>
+            </div>
+            
+            <div class="steps-indicator">
+                <div class="step-item completed" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-text">宗教需求</div>
+                </div>
+                <div class="step-item active" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-text">预算范围</div>
+                </div>
+                <div class="step-item" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-text">特殊要求</div>
+                </div>
+            </div>
+            
+            <!-- 第1步：宗教需求(已完成) -->
+            <div class="question-card" id="question1" style="display: none;">
+                <div class="question-title">请选择您的宗教信仰或仪式需求</div>
+                <div class="question-options">
+                    <div class="option-item selected" data-value="none">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">无宗教信仰</div>
+                            <div class="option-desc">采用现代简约的殡葬仪式</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="buddhist">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">佛教仪式</div>
+                            <div class="option-desc">包含佛教传统祈福、诵经等环节</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="taoist">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">道教仪式</div>
+                            <div class="option-desc">包含道教传统超度、做法事等环节</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="christian">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">基督教仪式</div>
+                            <div class="option-desc">包含基督教祷告、颂歌等环节</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="others">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">其他宗教或习俗</div>
+                            <div class="option-desc">可在下一步填写具体需求</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question-hint">
+                    <i class="fas fa-info-circle"></i> 提示：不同宗教仪式会影响殡葬服务的流程安排和相关准备工作，我们会据此为您提供专业建议。
+                </div>
+            </div>
+            
+            <!-- 第2步：预算范围(当前显示) -->
+            <div class="question-card" id="question2">
+                <div class="question-title">请选择您的预算范围</div>
+                
+                <div class="budget-amount" id="budgetDisplay">¥15,000</div>
+                
+                <div class="range-field">
+                    <div class="range-label">
+                        <span>基础服务</span>
+                        <span>高端定制</span>
+                    </div>
+                    <input type="range" min="5000" max="50000" step="1000" value="15000" class="range-input" id="budgetRange">
+                    <div class="range-label">
+                        <span>¥5,000</span>
+                        <span>¥50,000+</span>
+                    </div>
+                </div>
+                
+                <div class="question-options">
+                    <div class="option-item selected" data-value="economic">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">经济实惠型</div>
+                            <div class="option-desc">基础殡葬服务，简约而有尊严</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="standard">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">标准舒适型</div>
+                            <div class="option-desc">包含更多仪式和服务细节</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="premium">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">尊贵品质型</div>
+                            <div class="option-desc">高品质全方位服务，专业一对一跟进</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question-hint">
+                    <i class="fas fa-info-circle"></i> 提示：预算将影响服务项目的选择和品质，我们会根据您的预算提供最合适的服务组合。
+                </div>
+            </div>
+            
+            <!-- 第3步：特殊要求(未显示) -->
+            <div class="question-card" id="question3" style="display: none;">
+                <div class="question-title">有什么特殊要求或需求吗？</div>
+                
+                <textarea class="textarea-field" id="specialRequests" placeholder="请输入您的特殊要求，如特定仪式、场地偏好、纪念品制作等..." maxlength="200"></textarea>
+                <div class="input-limit"><span id="charCount">0</span>/200</div>
+                
+                <div class="question-options">
+                    <div class="option-item" data-value="green">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">希望采用绿色环保殡葬</div>
+                            <div class="option-desc">更环保的骨灰处理方式和纪念方式</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="digital">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">需要数字纪念服务</div>
+                            <div class="option-desc">包括在线纪念馆、数字化纪念册等</div>
+                        </div>
+                    </div>
+                    
+                    <div class="option-item" data-value="home">
+                        <div class="option-radio"></div>
+                        <div class="option-content">
+                            <div class="option-label">需要上门服务</div>
+                            <div class="option-desc">提供部分服务到府上进行</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question-hint">
+                    <i class="fas fa-info-circle"></i> 提示：特殊要求将有助于我们为您定制更加个性化的服务方案，满足您的特定需求。
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-default action-btn" id="prevBtn">上一步</button>
+                <button class="btn btn-primary action-btn" id="nextBtn">下一步</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentStep = 2; // 当前是第二步
+            const totalSteps = 3;
+            
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const budgetRange = document.getElementById('budgetRange');
+            const budgetDisplay = document.getElementById('budgetDisplay');
+            const specialRequests = document.getElementById('specialRequests');
+            const charCount = document.getElementById('charCount');
+            
+            // 更新预算显示
+            budgetRange.addEventListener('input', function() {
+                const value = this.value;
+                budgetDisplay.textContent = '¥' + Number(value).toLocaleString();
+                
+                // 根据预算选中对应选项
+                const options = document.querySelectorAll('#question2 .option-item');
+                options.forEach(option => option.classList.remove('selected'));
+                
+                if (value <= 10000) {
+                    options[0].classList.add('selected');
+                } else if (value <= 30000) {
+                    options[1].classList.add('selected');
+                } else {
+                    options[2].classList.add('selected');
+                }
+            });
+            
+            // 特殊要求字符计数
+            specialRequests.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+            });
+            
+            // 选项点击事件
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // 单选效果
+                    const parent = this.parentElement;
+                    parent.querySelectorAll('.option-item').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    // 如果是预算选项，同步滑动条
+                    if (this.closest('#question2')) {
+                        const value = this.getAttribute('data-value');
+                        if (value === 'economic') {
+                            budgetRange.value = 8000;
+                        } else if (value === 'standard') {
+                            budgetRange.value = 20000;
+                        } else if (value === 'premium') {
+                            budgetRange.value = 40000;
+                        }
+                        budgetDisplay.textContent = '¥' + Number(budgetRange.value).toLocaleString();
+                    }
+                });
+            });
+            
+            // 显示当前步骤
+            function showStep(step) {
+                // 隐藏所有问题卡片
+                document.querySelectorAll('.question-card').forEach(card => {
+                    card.style.display = 'none';
+                });
+                
+                // 显示当前步骤的问题卡片
+                document.getElementById('question' + step).style.display = 'block';
+                
+                // 更新步骤指示器
+                document.querySelectorAll('.step-item').forEach((item, index) => {
+                    const stepNum = index + 1;
+                    item.classList.remove('active', 'completed');
+                    
+                    if (stepNum < step) {
+                        item.classList.add('completed');
+                    } else if (stepNum === step) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // 更新按钮文本
+                if (step === 1) {
+                    prevBtn.style.visibility = 'hidden';
+                } else {
+                    prevBtn.style.visibility = 'visible';
+                }
+                
+                if (step === totalSteps) {
+                    nextBtn.textContent = '完成';
+                } else {
+                    nextBtn.textContent = '下一步';
+                }
+            }
+            
+            // 下一步按钮点击事件
+            nextBtn.addEventListener('click', function() {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                } else {
+                    // 已经是最后一步，提交问卷
+                    showLoading();
+                    
+                    setTimeout(() => {
+                        hideLoading();
+                        // 跳转到定制结果页面
+                        window.location.href = 'process-plan.html';
+                    }, 1500);
+                }
+            });
+            
+            // 上一步按钮点击事件
+            prevBtn.addEventListener('click', function() {
+                if (currentStep > 1) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+            
+            // 初始化显示当前步骤
+            showStep(currentStep);
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>智能客服 - 数字殡葬平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <style>
+        :root {
+            --primary-color: #5d8c91;
+            --primary-light: rgba(93, 140, 145, 0.1);
+            --primary-dark: #4a7478;
+            --text-color: #333;
+            --text-color-light: #777;
+            --border-color: #e0e0e0;
+            --bg-color: #f8f8f8;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #fff;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: var(--text-color);
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        /* 头部导航 */
+        .header {
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            position: relative;
+        }
+        
+        .back-button {
+            font-size: 20px;
+            width: 30px;
+        }
+        
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-tools {
+            display: flex;
+            align-items: center;
+        }
+        
+        .tool-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 14px;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            flex: 1;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 数字人区域 */
+        .avatar-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .digital-human {
+            height: 80%;
+            position: relative;
+        }
+        
+        /* 对话框 */
+        .dialog-box {
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            top: 160px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .dialog-avatar {
+            position: absolute;
+            left: 15px;
+            top: -25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dialog-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .dialog-text {
+            margin-top: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        /* 底部菜单 */
+        .footer {
+            height: 80px;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .action-button {
+            height: 50px;
+            padding: 0 20px;
+            background-color: #6352e3;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .menu-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="back-button">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="header-title">
+                泸州民政局
+            </div>
+            <div class="header-tools">
+                <div class="tool-button">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+                <div class="tool-button">
+                    <i class="fas fa-minus"></i>
+                </div>
+                <div class="tool-button">
+                    <i class="fas fa-circle"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <!-- 数字人 -->
+            <div class="avatar-container">
+                <img src="../images/kefu.png" alt="数字人" class="digital-human">
+                
+                <!-- 对话框 -->
+                <div class="dialog-box" style="margin-top: 100px;">
+                    
+                    <div class="dialog-text">
+                        您好，我是您的殡葬服务管家小安，我可以帮您了解殡葬服务的政策法规，帮您查询殡葬机构、服务站点和纪念馆信息。请问有什么可以帮助您？
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部 -->
+        <div class="footer">
+            <button class="action-button">
+                猜你想问
+            </button>
+            <i  style="margin-left: 10px;">
+                按住说话
+            </i>
+            <div class="menu-button">
+                <i class="fas fa-comment-dots"></i>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 返回按钮事件
+            document.querySelector('.back-button').addEventListener('click', function() {
+                window.location.href = 'home.html';
+            });
+            
+            // 猜你想问按钮事件
+            document.querySelector('.action-button').addEventListener('click', function() {
+                showQuestionSuggestions();
+            });
+            
+            // 对话按钮事件
+            document.querySelector('.menu-button').addEventListener('click', function() {
+                showInputDialog();
+            });
+        });
+        
+        // 显示问题建议
+        function showQuestionSuggestions() {
+            const suggestions = [
+                '如何申请丧葬补贴？',
+                '泸州市有哪些公墓？',
+                '殡仪馆服务收费标准是什么？',
+                '如何预约殡葬服务？',
+                '如何创建线上纪念馆？'
+            ];
+            
+            const dialog = document.createElement('div');
+            dialog.className = 'suggestions-dialog';
+            
+            let suggestionsHTML = '<div class="suggestions-header">常见问题</div><div class="suggestions-list">';
+            
+            suggestions.forEach(suggestion => {
+                suggestionsHTML += `<div class="suggestion-item">${suggestion}</div>`;
+            });
+            
+            suggestionsHTML += '</div><div class="suggestions-close">关闭</div>';
+            
+            dialog.innerHTML = suggestionsHTML;
+            document.body.appendChild(dialog);
+            
+            // 样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .suggestions-dialog {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background-color: white;
+                    border-radius: 15px 15px 0 0;
+                    padding: 20px;
+                    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                    z-index: 100;
+                    animation: slideUp 0.3s forwards;
+                }
+                
+                @keyframes slideUp {
+                    from { transform: translateY(100%); }
+                    to { transform: translateY(0); }
+                }
+                
+                .suggestions-header {
+                    font-size: 18px;
+                    font-weight: 500;
+                    margin-bottom: 15px;
+                    text-align: center;
+                }
+                
+                .suggestions-list {
+                    margin-bottom: 20px;
+                }
+                
+                .suggestion-item {
+                    padding: 12px 15px;
+                    border-bottom: 1px solid #f0f0f0;
+                    font-size: 15px;
+                }
+                
+                .suggestion-item:active {
+                    background-color: #f9f9f9;
+                }
+                
+                .suggestions-close {
+                    text-align: center;
+                    padding: 12px;
+                    color: #666;
+                    font-size: 15px;
+                    border-top: 1px solid #eee;
+                    margin: 0 -20px;
+                    margin-bottom: -20px;
+                }
+            `;
+            
+            document.head.appendChild(style);
+            
+            // 关闭事件
+            dialog.querySelector('.suggestions-close').addEventListener('click', function() {
+                document.body.removeChild(dialog);
+            });
+            
+            // 选择问题事件
+            dialog.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const question = this.textContent;
+                    document.body.removeChild(dialog);
+                    updateDialogWithAnswer(question);
+                });
+            });
+        }
+        
+        // 显示输入对话框
+        function showInputDialog() {
+            const dialog = document.createElement('div');
+            dialog.className = 'input-dialog';
+            
+            dialog.innerHTML = `
+                <div class="input-container">
+                    <input type="text" class="question-input" placeholder="请输入您的问题...">
+                    <button class="send-button"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            `;
+            
+            document.body.appendChild(dialog);
+            
+            // 样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .input-dialog {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background-color: white;
+                    padding: 15px;
+                    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                    z-index: 100;
+                    animation: slideUp 0.3s forwards;
+                }
+                
+                .input-container {
+                    display: flex;
+                    align-items: center;
+                }
+                
+                .question-input {
+                    flex: 1;
+                    height: 42px;
+                    border: 1px solid #ddd;
+                    border-radius: 21px;
+                    padding: 0 15px;
+                    font-size: 15px;
+                    outline: none;
+                }
+                
+                .send-button {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 21px;
+                    background-color: var(--primary-color);
+                    color: white;
+                    border: none;
+                    margin-left: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            `;
+            
+            document.head.appendChild(style);
+            
+            // 聚焦输入框
+            const input = dialog.querySelector('.question-input');
+            setTimeout(() => input.focus(), 100);
+            
+            // 关闭事件 - 点击空白区域
+            dialog.addEventListener('click', function(e) {
+                if (e.target === dialog) {
+                    document.body.removeChild(dialog);
+                }
+            });
+            
+            // 发送按钮事件
+            dialog.querySelector('.send-button').addEventListener('click', function() {
+                const question = input.value.trim();
+                if (question) {
+                    document.body.removeChild(dialog);
+                    updateDialogWithAnswer(question);
+                }
+            });
+            
+            // 回车发送
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const question = input.value.trim();
+                    if (question) {
+                        document.body.removeChild(dialog);
+                        updateDialogWithAnswer(question);
+                    }
+                }
+            });
+        }
+        
+        // 更新对话框回答
+        function updateDialogWithAnswer(question) {
+            const dialogText = document.querySelector('.dialog-text');
+            
+            // 显示思考中...
+            dialogText.innerHTML = '正在思考中...';
+            
+            // 模拟延迟回答
+            setTimeout(() => {
+                let answer = '';
+                
+                // 根据问题提供回答
+                if (question.includes('丧葬补贴')) {
+                    answer = `丧葬补贴申请流程如下：<br>
+                    1. 准备材料：死亡证明、申请人身份证、户口本、银行卡等<br>
+                    2. 到所在街道或社区服务中心提交申请<br>
+                    3. 等待审批（一般7-15个工作日）<br>
+                    4. 补贴将直接发放到您提供的银行账户<br><br>
+                    目前泸州市城镇职工丧葬补贴标准为5000元，具体金额可能根据死者参保情况有所调整。`;
+                } else if (question.includes('公墓')) {
+                    answer = `泸州市主要公墓有：<br>
+                    1. 泸州市九曲园公墓（地址：江阳区蓝田镇）<br>
+                    2. 泸州市福寿园公墓（地址：龙马潭区罗汉镇）<br>
+                    3. 泸州市天福陵园（地址：纳溪区丰乐镇）<br>
+                    4. 合江县福寿园公墓（地址：合江县先市镇）<br><br>
+                    您可以通过我们平台预约看墓，或者直接联系公墓管理处了解详情。`;
+                } else if (question.includes('收费标准')) {
+                    answer = `泸州市殡仪馆基本服务收费标准如下：<br>
+                    1. 遗体接运：市区内200元起<br>
+                    2. 遗体存放：180元/天<br>
+                    3. 告别厅使用：300-1200元（根据厅室大小）<br>
+                    4. 火化服务：330元<br>
+                    5. 骨灰寄存：200元/年<br><br>
+                    具体服务项目和收费可能会有调整，建议直接咨询殡仪馆了解详情。`;
+                } else if (question.includes('预约')) {
+                    answer = `预约殡葬服务可通过以下方式：<br>
+                    1. 电话预约：拨打泸州市殡仪馆服务热线0830-12345<br>
+                    2. 网上预约：通过本平台"在线预约"功能<br>
+                    3. 现场预约：直接前往泸州市殡仪馆服务大厅<br><br>
+                    预约时请准备好逝者信息、联系人电话等基本信息，我们的工作人员会尽快与您联系。`;
+                } else if (question.includes('纪念馆')) {
+                    answer = `创建线上纪念馆步骤：<br>
+                    1. 点击首页"数字纪念馆"选项<br>
+                    2. 进入后点击"创建纪念馆"按钮<br>
+                    3. 填写逝者基本信息（姓名、生卒年月、简介等）<br>
+                    4. 上传逝者照片和相关资料<br>
+                    5. 设置纪念馆权限（公开/私密）<br>
+                    6. 提交创建申请<br><br>
+                    基础版纪念馆完全免费，高级版提供更多定制化功能，年费98元起。`;
+                } else {
+                    answer = `您好，关于"${question}"的问题，我目前没有足够的信息。建议您拨打泸州市民政局热线0830-12345咨询，或者前往泸州市殡葬服务中心（地址：江阳区蓝田街道殡仪路88号）现场了解详情。`;
+                }
+                
+                dialogText.innerHTML = answer;
+            }, 1500);
+        }
+    </script>
+</body>
+</html> 
